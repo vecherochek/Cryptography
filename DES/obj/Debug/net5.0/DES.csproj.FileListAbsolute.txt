@@ -1,0 +1,16 @@
+C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\DES.csproj.AssemblyReference.cache
+C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\DES.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\DES.AssemblyInfoInputs.cache
+C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\DES.AssemblyInfo.cs
+C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\DES.csproj.CoreCompileInputs.cache
+C:\Users\pbure\RiderProjects\Сryptography\DES\bin\Debug\net5.0\DES.exe
+C:\Users\pbure\RiderProjects\Сryptography\DES\bin\Debug\net5.0\DES.deps.json
+C:\Users\pbure\RiderProjects\Сryptography\DES\bin\Debug\net5.0\DES.runtimeconfig.json
+C:\Users\pbure\RiderProjects\Сryptography\DES\bin\Debug\net5.0\DES.runtimeconfig.dev.json
+C:\Users\pbure\RiderProjects\Сryptography\DES\bin\Debug\net5.0\DES.dll
+C:\Users\pbure\RiderProjects\Сryptography\DES\bin\Debug\net5.0\ref\DES.dll
+C:\Users\pbure\RiderProjects\Сryptography\DES\bin\Debug\net5.0\DES.pdb
+C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\DES.dll
+C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\ref\DES.dll
+C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\DES.pdb
+C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\DES.genruntimeconfig.cache

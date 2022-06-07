@@ -1,5 +1,0 @@
-C:\Users\pbure\RiderProjects\Сryptography\Application\obj\Debug\Application.csproj.AssemblyReference.cache
-C:\Users\pbure\RiderProjects\Сryptography\Application\obj\Debug\Application.Form1.resources
-C:\Users\pbure\RiderProjects\Сryptography\Application\obj\Debug\Application.Properties.Resources.resources
-C:\Users\pbure\RiderProjects\Сryptography\Application\obj\Debug\Application.csproj.GenerateResource.cache
-C:\Users\pbure\RiderProjects\Сryptography\Application\obj\Debug\Application.csproj.CoreCompileInputs.cache

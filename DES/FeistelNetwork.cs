@@ -1,4 +1,5 @@
 ﻿using System;
+using Cryptography.Extensions;
 
 namespace DES
 {
@@ -25,7 +26,7 @@ namespace DES
                 left = tmp;
             }
 
-            return BitConverter.GetBytes(((ulong) left << 32 | right));
+            return BitConverter.GetBytes((left << 32 | right));
         }
         
         public byte[] Decrypt (byte[] block) 
@@ -42,13 +43,13 @@ namespace DES
                 right = tmp;
             }
 
-            return BitConverter.GetBytes(((ulong) left << 32 | right));
+            return BitConverter.GetBytes((left << 32 | right));
         }
         
         private static ulong FeistelFunction(ulong block, ulong roundKey)
         {
             var value = BitConverter.GetBytes(block);
-            var expandingPermutation = BitConverter.ToUInt32(Functions.Permutation32(value, Tables.ExpandingPermutation), 0);
+            var expandingPermutation = BitConverter.ToUInt32(ByteArrayExtensions.Permutation32(value, Tables.ExpandingPermutation), 0);
             var xor = expandingPermutation ^ roundKey;
 
             ulong result = 0;
@@ -63,7 +64,7 @@ namespace DES
             }
             value = BitConverter.GetBytes(result);
             
-            return BitConverter.ToUInt32(Functions.Permutation32(value, Tables.PBlock), 0);
+            return BitConverter.ToUInt32(ByteArrayExtensions.Permutation32(value, Tables.PBlock), 0);
         }
     }
 }

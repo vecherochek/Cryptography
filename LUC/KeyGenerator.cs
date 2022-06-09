@@ -16,7 +16,7 @@ namespace LUC
             _primeNumbers = prime.GeneratePrime();
             
             BigInteger e = GetE();
-            BigInteger D = message * message - (BigInteger) 4;
+            BigInteger D = message * message - 4;
             BigInteger S = BigIntegerExtensions.Lcm(_primeNumbers.P - BigIntegerExtensions.Legendre(D, _primeNumbers.P), _primeNumbers.Q - BigIntegerExtensions.Legendre(D, _primeNumbers.Q));
             BigInteger d = BigIntegerExtensions.MultiplicativeInverseModulo(e, S);
             
@@ -26,13 +26,13 @@ namespace LUC
         
         private BigInteger GetE()
         {
-            BigInteger number = (_primeNumbers.P - (BigInteger) 1) * (_primeNumbers.Q - (BigInteger) 1) *
-                              (_primeNumbers.P + (BigInteger) 1) * (_primeNumbers.Q + (BigInteger) 1);
+            BigInteger number = (_primeNumbers.P - 1) * (_primeNumbers.Q - 1) *
+                              (_primeNumbers.P + 1) * (_primeNumbers.Q + 1);
             
             BigInteger e;
             do
             {
-                e = BigIntegerExtensions.GenerateRandomBigInteger((BigInteger) 2, _primeNumbers.N);
+                e = BigIntegerExtensions.GenerateRandomBigInteger(2, _primeNumbers.N);
             } while (BigInteger.GreatestCommonDivisor(e, number) != 1);
 
             return e;

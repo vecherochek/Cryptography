@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 
 namespace Cryptography.Extensions
 {
-    public class BigIntegerExtensions
+    public static class BigIntegerExtensions
     {
         public static BigInteger Legendre(BigInteger a, BigInteger p)
         {
@@ -16,16 +16,16 @@ namespace Cryptography.Extensions
                 return a;
             
             BigInteger result;
-            if (BigInteger.Remainder(a, (BigInteger)2) == BigInteger.Zero)
+            if (BigInteger.Remainder(a, 2) == BigInteger.Zero)
             {
-                result = Legendre(a / (BigInteger)2, p);
-                if (((p * p - BigInteger.One) & (BigInteger)8) != BigInteger.Zero)
+                result = Legendre(a / 2, p);
+                if (((p * p - BigInteger.One) & 8) != BigInteger.Zero)
                     result = BigInteger.Negate(result);
             }
             else
             {
                 result = Legendre(p % a, a);
-                if (((a -  BigInteger.One) * (p - (BigInteger)1) & (BigInteger)4) != BigInteger.Zero)
+                if (((a -  BigInteger.One) * (p - 1) & 4) != BigInteger.Zero)
                     result = BigInteger.Negate(result);
             }
             
@@ -36,10 +36,10 @@ namespace Cryptography.Extensions
         
         public static BigInteger MultiplicativeInverseModulo(BigInteger a, BigInteger m)
         {
-            BigInteger g = Gcd(a, m, out BigInteger x, out BigInteger y);
+            BigInteger g = Gcd(a, m, out BigInteger x, out _);
             if (g != BigInteger.One) return BigInteger.Zero;  
             
-            return (x % m + m) % m;;
+            return (x % m + m) % m;
         }
         
         private static BigInteger Gcd(BigInteger a, BigInteger m, out BigInteger x, out BigInteger y)
@@ -80,7 +80,7 @@ namespace Cryptography.Extensions
             if (a < BigInteger.Zero)
             {
                 a = BigInteger.Negate(a);
-                if (BigInteger.Remainder(b, (BigInteger) 4) == 3)
+                if (BigInteger.Remainder(b, 4) == 3)
                 {
                     r = -r;
                 }
@@ -89,19 +89,19 @@ namespace Cryptography.Extensions
             do
             {
                 int t = 0;
-                while (BigInteger.Remainder(a, (BigInteger) 2) == 0)
+                while (BigInteger.Remainder(a, 2) == 0)
                 {
                     t++;
-                    a /= (BigInteger) 2;
+                    a /= 2;
                 }
 
                 if (t % 2 != 0)
                 {
-                    if (BigInteger.Remainder(b, (BigInteger) 8) == 3 || BigInteger.Remainder(b, (BigInteger) 8) == 5)
+                    if (BigInteger.Remainder(b, 8) == 3 || BigInteger.Remainder(b, 8) == 5)
                         r = -r;
                 }
 
-                if (BigInteger.Remainder(a, (BigInteger) 4) == 3 && BigInteger.Remainder(b, (BigInteger) 4) == 3)
+                if (BigInteger.Remainder(a, 4) == 3 && BigInteger.Remainder(b, 4) == 3)
                     r = -r;
                 
                 BigInteger c = a;
@@ -116,7 +116,7 @@ namespace Cryptography.Extensions
         public static BigInteger LucasSequencesMod(BigInteger P, BigInteger n, BigInteger mod)
         { 
             BigInteger prev = P;
-            BigInteger current = (P * P - (BigInteger)2) % n;
+            BigInteger current = (P * P - 2) % n;
             var size = n.GetBitLength() - 2;
             
             var nInBinarySystem = string.Concat(n.ToByteArray().Select(b => Convert.ToString(b, 2).PadLeft(8, '0')).Reverse());
@@ -125,12 +125,12 @@ namespace Cryptography.Extensions
                 if (nInBinarySystem[(int)(nInBinarySystem.Length - i)] == 1)
                 {
                     prev = (prev * current - P) % mod;
-                    current = (current * current - (BigInteger)2) % mod;
+                    current = (current * current - 2) % mod;
                 }
                 else if (nInBinarySystem[(int)(nInBinarySystem.Length - i)] == 0)
                 {
                     current = (prev * current - P) % mod;
-                    prev = (prev * prev - (BigInteger) 2) % mod;
+                    prev = (prev * prev - 2) % mod;
                 }
             }
             

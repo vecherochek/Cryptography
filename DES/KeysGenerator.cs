@@ -1,4 +1,5 @@
 ﻿using System;
+using Cryptography.Extensions;
 
 namespace DES
 {
@@ -13,7 +14,7 @@ namespace DES
         
         public ulong[] GenerateRoundKeys()
         {
-            var firstPermutation = Functions.Permutation64To56(_key, Tables.KeyPermutation);
+            var firstPermutation = ByteArrayExtensions.Permutation64To56(_key, Tables.KeyPermutation);
             var currentC = firstPermutation >> 28;
             var currentD = firstPermutation & ((1 << 28) - 1);
             var roundKeys = new ulong[16];
@@ -24,7 +25,7 @@ namespace DES
                 currentD = Shift(currentD, Tables.KeyShift[i]);
                 
                 var currentKey = (currentC << 28) | currentD;
-                roundKeys[i] =  BitConverter.ToUInt64(Functions.Permutation64( BitConverter.GetBytes(currentKey), Tables.KeyСompressionPermutation), 0);
+                roundKeys[i] =  BitConverter.ToUInt64(ByteArrayExtensions.Permutation64( BitConverter.GetBytes(currentKey), Tables.KeyСompressionPermutation), 0);
             }
 
             return roundKeys;

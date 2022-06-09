@@ -14,3 +14,6 @@ C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\DES.dll
 C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\ref\DES.dll
 C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\DES.pdb
 C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\DES.genruntimeconfig.cache
+C:\Users\pbure\RiderProjects\Сryptography\DES\bin\Debug\net5.0\Cryptography.Extensions.dll
+C:\Users\pbure\RiderProjects\Сryptography\DES\bin\Debug\net5.0\Cryptography.Extensions.pdb
+C:\Users\pbure\RiderProjects\Сryptography\DES\obj\Debug\net5.0\DES.csproj.CopyComplete

@@ -142,7 +142,11 @@
         "frameworks": {
           "net5.0": {
             "targetAlias": "net5.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Users\\pbure\\RiderProjects\\Сryptography\\Cryptography.Extensions\\Cryptography.Extensions.csproj": {
+                "projectPath": "C:\\Users\\pbure\\RiderProjects\\Сryptography\\Cryptography.Extensions\\Cryptography.Extensions.csproj"
+              }
+            }
           }
         },
         "warningProperties": {

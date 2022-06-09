@@ -24,7 +24,7 @@ namespace LUC
                 q = RandomPrimeNumberGenerator();
                 N = p * q;
 
-            } while (BigInteger.Compare((BigInteger)N.GetBitLength(), (BigInteger)_length) < 0);
+            } while (BigInteger.Compare(N.GetBitLength(), _length) < 0);
 
             return new PrimeNumbers(p, q);
         }

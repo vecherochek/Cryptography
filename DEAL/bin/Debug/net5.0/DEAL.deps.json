@@ -21,6 +21,9 @@
         }
       },
       "DES/1.0.0": {
+        "dependencies": {
+          "Cryptography.Extensions": "1.0.0"
+        },
         "runtime": {
           "DES.dll": {}
         }

@@ -15,6 +15,9 @@
       "DES/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v5.0",
+        "dependencies": {
+          "Cryptography.Extensions": "1.0.0"
+        },
         "compile": {
           "bin/placeholder/DES.dll": {}
         },

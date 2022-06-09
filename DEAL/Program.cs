@@ -43,7 +43,7 @@ namespace DEAL
             //var Number =(BigInteger)Math.Pow(2, 127) - 5236346456524;
             //Console.WriteLine(Number.GetByteCount());
             //Console.WriteLine(Number);
-            string b = "кек";
+            string b = "кек65grw8w-4k4w3495e49-5ugu8te54";
             
             byte[] key = a.ToByteArray();
             
@@ -51,8 +51,6 @@ namespace DEAL
             
             var t = new DEAL(key);
             var en = t.EncryptBlock(block);
-            
-            Console.WriteLine(new BigInteger(en));
             Console.WriteLine(Encoding.Default.GetString(t.DecryptBlock(en)));
         }
     }

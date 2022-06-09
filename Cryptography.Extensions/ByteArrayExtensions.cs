@@ -64,6 +64,18 @@ namespace Cryptography.Extensions
 
             return changed;
         }
+
+        public static byte[] PaddingPKCs7(byte[] block)
+        {
+            if (block.Length % 8 == 0) return block;
+            
+            byte addition = (byte) (16 - block.Length % 16);
+            var paddedBlock = new byte[block.Length + addition];
+            Array.Copy(block, paddedBlock, block.Length);
+            Array.Fill(paddedBlock, addition, block.Length, addition); 
+            
+            return paddedBlock;
+        }
     }
     
 }

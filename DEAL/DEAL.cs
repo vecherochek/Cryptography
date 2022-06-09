@@ -16,7 +16,7 @@ namespace DEAL
         }
         public byte[] EncryptBlock(byte[] message)
         {
-            var original = PaddingPKCs7(message);
+            var original = ByteArrayExtensions.PaddingPKCs7(message);
             var result = new byte[original.Length];
             
             for (var i = 0; i < result.Length / 16; i++)
@@ -46,15 +46,7 @@ namespace DEAL
             
             return result;
         }
-        private static byte[] PaddingPKCs7(byte[] block)
-        {
-            byte addition = (byte) (16 - block.Length % 16);
-            var paddedBlock = new byte[block.Length + addition];
-            Array.Copy(block, paddedBlock, block.Length);
-            Array.Fill(paddedBlock, addition, block.Length, addition); 
-            
-            return paddedBlock;
-        }
+        
         private byte[] Encrypt (byte[] block)
         {
             var (left, right) = (block.Take(block.Length / 2).ToArray(), block.Skip(block.Length / 2).ToArray());
@@ -80,7 +72,7 @@ namespace DEAL
             var numberOfRounds = 6;
             if (_key.Length == 32) numberOfRounds = 8;
             
-            for (var i = 0; i < numberOfRounds; i++)
+            for (var i = numberOfRounds - 1; i >= 0; i--)
             {
                 var des = new DES.DES(_roundKeys[i], DES.EncryptionModes.CBC, new byte[]{1,1,1,1,1,1,1,1});
                 var tmp = right;

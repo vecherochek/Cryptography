@@ -18,7 +18,7 @@ namespace DES
         
         public byte[] EncryptBlock(byte[] message)
         {
-            var original = PaddingPKCs7(message);
+            var original = ByteArrayExtensions.PaddingPKCs7(message);
             var result = new byte[original.Length];
 
             switch (_encryptionMode)
@@ -115,17 +115,6 @@ namespace DES
             block = new FeistelNetwork(_roundKeys).Decrypt(block);
             
             return ByteArrayExtensions.Permutation64(block, Tables.FinalPermutation);
-        }
-        private  static byte[] PaddingPKCs7(byte[] block)
-        {
-            if (block.Length % 8 == 0) return block;
-            
-            byte addition = (byte) (8 - block.Length % 8);
-            var paddedBlock = new byte[block.Length + addition];
-            Array.Copy(block, paddedBlock, block.Length);
-            Array.Fill(paddedBlock, addition, block.Length, addition); 
-            
-            return paddedBlock;
         }
     }
 }

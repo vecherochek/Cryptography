@@ -1,0 +1,12 @@
+C:\Users\pbure\RiderProjects\Сryptography\Cryptography.Extensions\bin\Debug\net5.0\Cryptography.Extensions.deps.json
+C:\Users\pbure\RiderProjects\Сryptography\Cryptography.Extensions\bin\Debug\net5.0\Cryptography.Extensions.dll
+C:\Users\pbure\RiderProjects\Сryptography\Cryptography.Extensions\bin\Debug\net5.0\ref\Cryptography.Extensions.dll
+C:\Users\pbure\RiderProjects\Сryptography\Cryptography.Extensions\bin\Debug\net5.0\Cryptography.Extensions.pdb
+C:\Users\pbure\RiderProjects\Сryptography\Cryptography.Extensions\obj\Debug\net5.0\Cryptography.Extensions.csproj.AssemblyReference.cache
+C:\Users\pbure\RiderProjects\Сryptography\Cryptography.Extensions\obj\Debug\net5.0\Cryptography.Extensions.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\pbure\RiderProjects\Сryptography\Cryptography.Extensions\obj\Debug\net5.0\Cryptography.Extensions.AssemblyInfoInputs.cache
+C:\Users\pbure\RiderProjects\Сryptography\Cryptography.Extensions\obj\Debug\net5.0\Cryptography.Extensions.AssemblyInfo.cs
+C:\Users\pbure\RiderProjects\Сryptography\Cryptography.Extensions\obj\Debug\net5.0\Cryptography.Extensions.csproj.CoreCompileInputs.cache
+C:\Users\pbure\RiderProjects\Сryptography\Cryptography.Extensions\obj\Debug\net5.0\Cryptography.Extensions.dll
+C:\Users\pbure\RiderProjects\Сryptography\Cryptography.Extensions\obj\Debug\net5.0\ref\Cryptography.Extensions.dll
+C:\Users\pbure\RiderProjects\Сryptography\Cryptography.Extensions\obj\Debug\net5.0\Cryptography.Extensions.pdb

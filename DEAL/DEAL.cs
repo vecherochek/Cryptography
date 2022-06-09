@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Numerics;
+using System.Linq;
+using Cryptography.Extensions;
 
 namespace DEAL
 {
@@ -7,7 +8,6 @@ namespace DEAL
     {
         private readonly byte[][] _roundKeys;
         private readonly byte[] _key;
-
         
         public DEAL(byte[] key)
         {
@@ -55,13 +55,10 @@ namespace DEAL
             
             return paddedBlock;
         }
-        private byte[] Encrypt (byte[] block) 
+        private byte[] Encrypt (byte[] block)
         {
-
-            var number = new BigInteger(block);
-
-            var left = number >> (int) number.GetByteCount() * 4;
-            var right = (number & (BigInteger.One << (int) number.GetByteCount() * 4) - BigInteger.One);
+            var (left, right) = (block.Take(block.Length / 2).ToArray(), block.Skip(block.Length / 2).ToArray());
+            
             var numberOfRounds = 6;
             if (_key.Length == 32) numberOfRounds = 8;
             
@@ -69,35 +66,29 @@ namespace DEAL
             {
                 var des = new DES.DES(_roundKeys[i], DES.EncryptionModes.CBC, new byte[]{1,1,1,1,1,1,1,1});
                 var tmp = left;
-                left = new BigInteger(des.Encrypt(left.ToByteArray()));
-                left = left ^ right;
+                left = des.EncryptBlock(left).Xor(right);
                 right = tmp;
             }
-
-            var t = (left << (int) number.GetByteCount() * 4 | right).ToByteArray();
-            return t;
+            
+            return left.Concat(right).ToArray();
         }
         private byte[] Decrypt (byte[] block) 
         {
 
-            var number = new BigInteger(block);
-
-            var left = number >> (int) number.GetByteCount() * 4;
-            var right = (number & (BigInteger.One << (int) number.GetByteCount() * 4) - BigInteger.One);
+            var (left, right) = (block.Take(block.Length / 2).ToArray(), block.Skip(block.Length / 2).ToArray());
+            
             var numberOfRounds = 6;
             if (_key.Length == 32) numberOfRounds = 8;
             
-            for (var i = numberOfRounds - 1; i >= 0; i--)
+            for (var i = 0; i < numberOfRounds; i++)
             {
                 var des = new DES.DES(_roundKeys[i], DES.EncryptionModes.CBC, new byte[]{1,1,1,1,1,1,1,1});
                 var tmp = right;
-                right = new BigInteger(des.Decrypt(right.ToByteArray()));
-                right = left ^ right;
+                right = des.EncryptBlock(right).Xor(left);
                 left = tmp;
             }
-            var t = (left << (int) number.GetByteCount() * 4 | right).ToByteArray();
-            return t;
+            
+            return left.Concat(right).ToArray();
         }
-        
     }
 }

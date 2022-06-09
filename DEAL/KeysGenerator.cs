@@ -1,16 +1,29 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
+
+using Cryptography.Extensions;
 
 namespace DEAL
 {
     public class KeysGenerator
     {
         private readonly long _const_key = 0x1234567890abcdef;
+
+        private readonly byte[][] _bit64OriginalString;
         private readonly byte[] _key;
         private byte[][] _roundKeys;
 
         public KeysGenerator(byte[] key)
         {
+            _bit64OriginalString = new ulong[]
+            {
+                0x8000000000000000,
+                0x0800000000000000,
+                0x0008000000000000,
+                0x0000000800000000
+            }.Select(BitConverter.GetBytes).ToArray();
+            
             _key = key;
         }
         
@@ -22,50 +35,80 @@ namespace DEAL
             {
                 case 16:
                 {
-                    ulong k1 = BitConverter.ToUInt64(_key,0)>> 32;
-                    ulong k2 = (BitConverter.ToUInt64(_key, 0) & ((ulong) 1 << 32) - 1);
                     _roundKeys = new byte[6][];
-                    _roundKeys[0] = des.Encrypt(BitConverter.GetBytes(k1));
-                    _roundKeys[1] = des.Encrypt(BitConverter.GetBytes(k2 ^ BitConverter.ToUInt64(_roundKeys[0], 0)));
-                    _roundKeys[2] = des.Encrypt(BitConverter.GetBytes(k1 ^ 0x8000000000000000 ^ BitConverter.ToUInt64(_roundKeys[1], 0)));
-                    _roundKeys[3] = des.Encrypt(BitConverter.GetBytes(k2 ^ 0x0800000000000000 ^ BitConverter.ToUInt64(_roundKeys[2], 0)));
-                    _roundKeys[4] = des.Encrypt(BitConverter.GetBytes(k1 ^ 0x0008000000000000 ^ BitConverter.ToUInt64(_roundKeys[3], 0)));
-                    _roundKeys[5] = des.Encrypt(BitConverter.GetBytes(k2 ^ 0x0000000800000000 ^ BitConverter.ToUInt64(_roundKeys[4], 0)));
+
+                    var k = new []
+                    {
+                        _key.Take(_key.Length / 2).ToArray(),
+                        _key.Skip(_key.Length / 2).ToArray()
+                    };
+                    
+                    _roundKeys[0] = des.EncryptBlock(k[0]);
+                    _roundKeys[1] = des.EncryptBlock(k[1].Xor(_roundKeys[0]));
+
+                    for (var i = 0; i < 4; i++)
+                    {
+                        _roundKeys[i + 2] = des.EncryptBlock(k[i % 2]
+                            .Xor(_bit64OriginalString[i])
+                            .Xor(_roundKeys[i + 1]));
+                    }
+                    
                     break;
                 }
 
                 case 24:
                 {
-                    BigInteger k1 = new BigInteger(_key) >> 64;
-                    BigInteger k2 = new BigInteger(_key) & (BigInteger.One << 64) - BigInteger.One;
-                    BigInteger k3 = (new BigInteger(_key) >> 64) & ((BigInteger.One << 64) - BigInteger.One);
-                    _roundKeys = new byte[6][];
-                    _roundKeys[0] = des.Encrypt(k1.ToByteArray());
-                    _roundKeys[1] = des.Encrypt((k2 ^ new BigInteger(_roundKeys[0])).ToByteArray());
-                    _roundKeys[2] = des.Encrypt((k3 ^ new BigInteger(_roundKeys[1])).ToByteArray());
-                    _roundKeys[3] = des.Encrypt((k1 ^ 0x8000000000000000 ^ new BigInteger(_roundKeys[2])).ToByteArray());
-                    _roundKeys[4] = des.Encrypt((k2 ^ 0x0800000000000000 ^ new BigInteger(_roundKeys[3])).ToByteArray());
-                    _roundKeys[5] = des.Encrypt((k3 ^ 0x0008000000000000 ^ new BigInteger(_roundKeys[4])).ToByteArray());
+                    var k = new []
+                    {
+                        _key.Take(_key.Length / 3).ToArray(),
+                        _key.Skip(_key.Length / 3).Take(_key.Length / 3).ToArray(),
+                        _key.Skip(_key.Length / 3 * 2).ToArray()
+                    };
+                    
+                    _roundKeys[0] = des.EncryptBlock(k[0]);
+                    
+                    for (var i = 0; i < 2; i++)
+                    {
+                        _roundKeys[i + 1] = des.EncryptBlock(k[i % 3].Xor(_roundKeys[i]));
+                    }
+                    
+                    for (var i = 0; i < 3; i++)
+                    {
+                        _roundKeys[i + 3] = des.EncryptBlock(k[i % 3]
+                            .Xor(_bit64OriginalString[i])
+                            .Xor(_roundKeys[i + 1]));
+                    }
+       
                     break;
                 }
                 case 32:
                 {
-                    BigInteger k1 = new BigInteger(_key) >> 64;
-                    BigInteger k2 = new BigInteger(_key) & (BigInteger.One << 64) - BigInteger.One;
-                    BigInteger k3 = (new BigInteger(_key) >> 64) & ((BigInteger.One << 128) - BigInteger.One);
-                    BigInteger k4 = (new BigInteger(_key) >> 128) & ((BigInteger.One << 64) - BigInteger.One);
-                    _roundKeys = new byte[8][];
-                    _roundKeys[0] = des.Encrypt(k1.ToByteArray());
-                    _roundKeys[1] = des.Encrypt((k2 ^ new BigInteger(_roundKeys[0])).ToByteArray());
-                    _roundKeys[2] = des.Encrypt((k3 ^ new BigInteger(_roundKeys[1])).ToByteArray());
-                    _roundKeys[3] = des.Encrypt((k4 ^ new BigInteger(_roundKeys[2])).ToByteArray());
-                    _roundKeys[4] = des.Encrypt((k1 ^ 0x8000000000000000 ^ new BigInteger(_roundKeys[3])).ToByteArray());
-                    _roundKeys[5] = des.Encrypt((k2 ^ 0x0800000000000000 ^ new BigInteger(_roundKeys[4])).ToByteArray());
-                    _roundKeys[6] = des.Encrypt((k3 ^ 0x0008000000000000 ^ new BigInteger(_roundKeys[5])).ToByteArray());
-                    _roundKeys[7] = des.Encrypt((k4 ^ 0x0000000800000000 ^ new BigInteger(_roundKeys[6])).ToByteArray());
+                    var k = new []
+                    {
+                        _key.Take(_key.Length / 4).ToArray(),
+                        _key.Skip(_key.Length / 4).Take(_key.Length / 4).ToArray(),
+                        _key.Skip(_key.Length / 4 * 2).Take(_key.Length / 4).ToArray(),
+                        _key.Skip(_key.Length / 4 * 3).ToArray()
+                    };
+                    
+                    _roundKeys[0] = des.EncryptBlock(k[0]);
+                    
+                    for (var i = 0; i < 3; i++)
+                    {
+                        _roundKeys[i + 1] = des.EncryptBlock(k[i % 4].Xor(_roundKeys[i]));
+                    }
+                    
+                    for (var i = 0; i < 4; i++)
+                    {
+                        _roundKeys[i + 4] = des.EncryptBlock(k[i % 4]
+                            .Xor(_bit64OriginalString[i])
+                            .Xor(_roundKeys[i + 1]));
+                    }
+                    
                     break;
                 }
             }
+            
             return _roundKeys;
         }
     }

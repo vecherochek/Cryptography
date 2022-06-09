@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Numerics;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace DES
@@ -11,7 +9,7 @@ namespace DES
         {
             ulong a =  0x1234567890abcdef;
             
-            string b = "кекеcszdvfsgbetyw45yt45t";
+            string b = "кекеcszdvfsgbetyw665464   /*- ./..,,/7 rtr    45yt45t";
             
             byte[] key = BitConverter.GetBytes(a);
             

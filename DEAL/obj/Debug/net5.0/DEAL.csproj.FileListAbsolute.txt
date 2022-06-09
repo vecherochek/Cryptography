@@ -21,3 +21,5 @@ C:\Users\pbure\RiderProjects\Сryptography\DEAL\obj\Debug\net5.0\DEAL.dll
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\obj\Debug\net5.0\ref\DEAL.dll
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\obj\Debug\net5.0\DEAL.pdb
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\obj\Debug\net5.0\DEAL.genruntimeconfig.cache
+C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\Cryptography.Extensions.dll
+C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\Cryptography.Extensions.pdb

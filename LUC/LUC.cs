@@ -1,14 +1,14 @@
 ﻿using System.Numerics;
-using static LUC.Utilities;
+using Cryptography.Extensions;
 
 namespace LUC
 {
     public class LUC
     {
         public BigInteger Encrypt(BigInteger message, LucKey publicKey) 
-            => LucasSequencesMod(message, publicKey.Key, publicKey.N);
+            => BigIntegerExtensions.LucasSequencesMod(message, publicKey.Key, publicKey.N);
         
         public BigInteger Decrypt(BigInteger message, LucKey privateKey) 
-            => LucasSequencesMod(message,  privateKey.Key,  privateKey.N);
+            => BigIntegerExtensions.LucasSequencesMod(message,  privateKey.Key,  privateKey.N);
     }
 }

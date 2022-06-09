@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Cryptography.Extensions\Cryptography.Extensions.csproj" />
       <ProjectReference Include="..\DES\DES.csproj" />
     </ItemGroup>
 

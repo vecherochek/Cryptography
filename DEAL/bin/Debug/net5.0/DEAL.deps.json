@@ -8,10 +8,16 @@
     ".NETCoreApp,Version=v5.0": {
       "DEAL/1.0.0": {
         "dependencies": {
+          "Cryptography.Extensions": "1.0.0",
           "DES": "1.0.0"
         },
         "runtime": {
           "DEAL.dll": {}
+        }
+      },
+      "Cryptography.Extensions/1.0.0": {
+        "runtime": {
+          "Cryptography.Extensions.dll": {}
         }
       },
       "DES/1.0.0": {
@@ -23,6 +29,11 @@
   },
   "libraries": {
     "DEAL/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Cryptography.Extensions/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

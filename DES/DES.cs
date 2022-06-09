@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 
 namespace DES
 {
@@ -102,22 +101,24 @@ namespace DES
             return result;
         }
 
-        public byte[] Encrypt(byte[] block)
+        private byte[] Encrypt(byte[] block)
         {
             block = Functions.Permutation64(block, Tables.InitialPermutation);
             block = new FeistelNetwork(_roundKeys).Encrypt(block);
             
             return Functions.Permutation64(block, Tables.FinalPermutation);
         }
-        public byte[] Decrypt(byte[] block)
+        private byte[] Decrypt(byte[] block)
         {
             block = Functions.Permutation64(block, Tables.InitialPermutation);
             block = new FeistelNetwork(_roundKeys).Decrypt(block);
             
             return Functions.Permutation64(block, Tables.FinalPermutation);
         }
-        public static byte[] PaddingPKCs7(byte[] block)
+        private  static byte[] PaddingPKCs7(byte[] block)
         {
+            if (block.Length % 8 == 0) return block;
+            
             byte addition = (byte) (8 - block.Length % 8);
             var paddedBlock = new byte[block.Length + addition];
             Array.Copy(block, paddedBlock, block.Length);

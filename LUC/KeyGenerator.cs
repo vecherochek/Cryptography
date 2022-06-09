@@ -1,35 +1,15 @@
 ﻿using System.Numerics;
-using static LUC.Utilities;
+using Cryptography.Extensions;
 
 namespace LUC
 {
     public class KeyGenerator
     {
         private readonly PrimeNumbers _primeNumbers;
-        private LucKey _publicKey;
-        private LucKey _privateKey;
-        public LucKey PublicKey
-        {
-            get
-            {
-                return _publicKey;
-            }
-            private set
-            {
-                _publicKey = value;
-            }
-        }
-        public LucKey PrivateKey
-        {
-            get
-            {
-                return _privateKey;
-            }
-            private set
-            {
-                _privateKey = value;
-            }
-        }
+        public LucKey PublicKey { get; }
+
+        public LucKey PrivateKey { get; }
+
         public KeyGenerator(BigInteger message)
         {
             var prime = new PrimeNumbersGenerator(message.GetByteCount(), PrimeNumberTest.MillerRabin, 0.75);
@@ -37,8 +17,8 @@ namespace LUC
             
             BigInteger e = GetE();
             BigInteger D = message * message - (BigInteger) 4;
-            BigInteger S = Lcm(_primeNumbers.P - Legendre(D, _primeNumbers.P), _primeNumbers.Q - Legendre(D, _primeNumbers.Q));
-            BigInteger d = MultiplicativeInverseModulo(e, S);
+            BigInteger S = BigIntegerExtensions.Lcm(_primeNumbers.P - BigIntegerExtensions.Legendre(D, _primeNumbers.P), _primeNumbers.Q - BigIntegerExtensions.Legendre(D, _primeNumbers.Q));
+            BigInteger d = BigIntegerExtensions.MultiplicativeInverseModulo(e, S);
             
             PublicKey = new LucKey(e, _primeNumbers.N);
             PrivateKey = new LucKey(d, _primeNumbers.N);
@@ -52,7 +32,7 @@ namespace LUC
             BigInteger e;
             do
             {
-                e = GenerateRandomBigInteger((BigInteger) 2, _primeNumbers.N);
+                e = BigIntegerExtensions.GenerateRandomBigInteger((BigInteger) 2, _primeNumbers.N);
             } while (BigInteger.GreatestCommonDivisor(e, number) != 1);
 
             return e;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Numerics;
-using static LUC.Utilities;
+using Cryptography.Extensions;
 
 namespace LUC
 {
@@ -11,7 +11,7 @@ namespace LUC
             if (number == (BigInteger)1) return false;
             for (var k = 1; 1 - Math.Pow(2, -k) <= probability; k++)
             {
-                BigInteger a = GenerateRandomBigInteger((BigInteger) 1, number);
+                BigInteger a = BigIntegerExtensions.GenerateRandomBigInteger((BigInteger) 1, number);
                 if (BigInteger.ModPow(a, number - BigInteger.One, number) != 1)
                     return false;
             }
@@ -23,10 +23,10 @@ namespace LUC
             if (number == BigInteger.One) return false;
             for (var k = 1; 1 - Math.Pow(2, -k) <= probability; k++)
             {
-                BigInteger a = GenerateRandomBigInteger((BigInteger) 1, number);
+                BigInteger a = BigIntegerExtensions.GenerateRandomBigInteger((BigInteger) 1, number);
                 if (BigInteger.GreatestCommonDivisor(a, number) > BigInteger.One) 
                     return false;
-                if (BigInteger.ModPow(a, (number - BigInteger.One) / (BigInteger) 2, number) != (BigInteger) Jacobi(a, number))
+                if (BigInteger.ModPow(a, (number - BigInteger.One) / (BigInteger) 2, number) != (BigInteger) BigIntegerExtensions.Jacobi(a, number))
                     return false;
             }
 
@@ -48,7 +48,7 @@ namespace LUC
 
             for (int k = 1; 1 - Math.Pow(4, -k) <= probability; k++)
             {
-                var b = GenerateRandomBigInteger((BigInteger) 1, a);
+                var b = BigIntegerExtensions.GenerateRandomBigInteger((BigInteger) 1, a);
                 var x = BigInteger.ModPow(b, a, number);
                 
                 if (BigInteger.Compare(x, (BigInteger)1) == 0 || BigInteger.Compare(x, (BigInteger)a) == 0)

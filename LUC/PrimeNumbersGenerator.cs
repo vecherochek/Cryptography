@@ -35,7 +35,7 @@ namespace LUC
             while (true)
             {
                 random.GetBytes(buffer);
-                buffer[0] |= 0x01;
+                buffer[^1] &= 0b01111111;
                 var primeNumber = new BigInteger(buffer);
                 
                 if ((BigInteger)2 > primeNumber) continue;

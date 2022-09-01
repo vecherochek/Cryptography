@@ -8,7 +8,8 @@
     ".NETCoreApp,Version=v5.0": {
       "DES/1.0.0": {
         "dependencies": {
-          "Cryptography.Extensions": "1.0.0"
+          "Cryptography.Extensions": "1.0.0",
+          "SymmetricalAlgorithm": "1.0.0"
         },
         "runtime": {
           "DES.dll": {}
@@ -17,6 +18,11 @@
       "Cryptography.Extensions/1.0.0": {
         "runtime": {
           "Cryptography.Extensions.dll": {}
+        }
+      },
+      "SymmetricalAlgorithm/1.0.0": {
+        "runtime": {
+          "SymmetricalAlgorithm.dll": {}
         }
       }
     }
@@ -28,6 +34,11 @@
       "sha512": ""
     },
     "Cryptography.Extensions/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SymmetricalAlgorithm/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

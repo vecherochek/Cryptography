@@ -11,6 +11,16 @@
         "runtime": {
           "bin/placeholder/Cryptography.Extensions.dll": {}
         }
+      },
+      "SymmetricalAlgorithm/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v5.0",
+        "compile": {
+          "bin/placeholder/SymmetricalAlgorithm.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SymmetricalAlgorithm.dll": {}
+        }
       }
     }
   },
@@ -19,11 +29,17 @@
       "type": "project",
       "path": "../Cryptography.Extensions/Cryptography.Extensions.csproj",
       "msbuildProject": "../Cryptography.Extensions/Cryptography.Extensions.csproj"
+    },
+    "SymmetricalAlgorithm/1.0.0": {
+      "type": "project",
+      "path": "../SymmetricalAlgorithm/SymmetricalAlgorithm.csproj",
+      "msbuildProject": "../SymmetricalAlgorithm/SymmetricalAlgorithm.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net5.0": [
-      "Cryptography.Extensions >= 1.0.0"
+      "Cryptography.Extensions >= 1.0.0",
+      "SymmetricalAlgorithm >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -55,6 +71,9 @@
           "projectReferences": {
             "C:\\Users\\pbure\\RiderProjects\\Сryptography\\Cryptography.Extensions\\Cryptography.Extensions.csproj": {
               "projectPath": "C:\\Users\\pbure\\RiderProjects\\Сryptography\\Cryptography.Extensions\\Cryptography.Extensions.csproj"
+            },
+            "C:\\Users\\pbure\\RiderProjects\\Сryptography\\SymmetricalAlgorithm\\SymmetricalAlgorithm.csproj": {
+              "projectPath": "C:\\Users\\pbure\\RiderProjects\\Сryptography\\SymmetricalAlgorithm\\SymmetricalAlgorithm.csproj"
             }
           }
         }
@@ -83,7 +102,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
       }
     }
   }

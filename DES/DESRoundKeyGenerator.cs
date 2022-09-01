@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using SymmetricalAlgorithm;
 using static Cryptography.Extensions.BitArrayExtensions;
 using static Cryptography.Extensions.ByteArrayExtensions;
@@ -10,6 +11,9 @@ namespace DES
     {
         public byte[][] GenerateRoundKeys(byte[] key)
         {
+            if (key.Length != 8)
+                throw new ArgumentOutOfRangeException(nameof(key), key.Length,
+                    "Invalid key. The allowed key size is 8 byte.");
             var roundKeys = new byte[16][];
             var keybits = new BitArray(key);
             var currentC = BitsPermutation(keybits, Tables.KeyPermutationC);

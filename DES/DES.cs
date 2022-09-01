@@ -1,120 +1,52 @@
 ﻿using System;
-using Cryptography.Extensions;
+using static Cryptography.Extensions.ByteArrayExtensions;
+using SymmetricalAlgorithm;
 
 namespace DES
 {
-    public class DES
+    public class DES : ISymmetricalAlgorithm
     {
-        private readonly ulong[] _roundKeys;
-        private readonly EncryptionModes _encryptionMode;
-        private readonly byte[] _initializationVector;
+        private const int BlockSizeConst = 8;
 
-        public DES(byte[] key, EncryptionModes encryptionMode, byte[] initializationVector)
-        {
-            _roundKeys = new KeysGenerator(key).GenerateRoundKeys();
-            _encryptionMode = encryptionMode;
-            _initializationVector = initializationVector;
-        }
-        
-        public byte[] EncryptBlock(byte[] message)
-        {
-            var original = ByteArrayExtensions.PaddingPKCs7(message);
-            var result = new byte[original.Length];
+        private readonly ISymmetricalAlgorithm _feistelNetwork =
+            new FeistelNetwork(new DESRoundKeyGenerator(), new DESFeistelFunction(), BlockSizeConst, 16);
 
-            switch (_encryptionMode)
+        public int BlockSize => BlockSizeConst;
+
+        public byte[] Encrypt(byte[] block, byte[][] roundKeys)
+        {
+            if (block.Length != BlockSizeConst)
             {
-                case EncryptionModes.ECB:
-                    for (var i = 0; i < result.Length / 8; i++)
-                    {
-                        var currentBlock = new byte[8];
-                
-                        Array.Copy(original, i * 8, currentBlock, 0, 8);
-                        currentBlock = Encrypt(currentBlock);
-                        Array.Copy(currentBlock, 0, result, i * 8, 8);
-                    }
-                    break;
-                
-                case EncryptionModes.CBC:
-                {
-                    var prevBlock = new byte[8];
-                    Array.Copy(_initializationVector, prevBlock, prevBlock.Length);
-                    for (var i = 0; i < result.Length / 8; i++)
-                    {
-                        var currentBlock = new byte[8];
-                        Array.Copy(original, i * 8, currentBlock, 0, 8);
-
-                        currentBlock = BitConverter.GetBytes(BitConverter.ToUInt64(prevBlock, 0) ^ BitConverter.ToUInt64(currentBlock, 0));
-                        currentBlock = Encrypt(currentBlock);
-                        
-                        Array.Copy(currentBlock, 0, result, i * 8, 8);
-                        Array.Copy(currentBlock, prevBlock, prevBlock.Length);
-                    }
-                }
-                    break;
+                throw new ArgumentException($"Block length must be equal to {BlockSizeConst}.");
             }
-            
-            return result;
+
+            block = Permutation(block, Tables.InitialPermutation);
+            block = _feistelNetwork.Encrypt(block, roundKeys);
+
+            return Permutation(block, Tables.FinalPermutation);
         }
-        
-        public byte[] DecryptBlock(byte[] message)
+
+        public byte[] Decrypt(byte[] block, byte[][] roundKeys)
         {
-            var result = new byte[message.Length];
-            switch (_encryptionMode)
+            if (block.Length != BlockSizeConst)
             {
-                case EncryptionModes.ECB:
-                {
-                    for (var i = 0; i < result.Length / 8; i++)
-                    {
-                        var currentBlock = new byte[8];
-
-                        Array.Copy(message, i * 8, currentBlock, 0, 8);
-                        currentBlock = Decrypt(currentBlock);
-
-                        Array.Copy(currentBlock, 0, result, i * 8, 8);
-                    }
-
-                    break;
-                }
-                case EncryptionModes.CBC:
-                    {
-                        var prevBlock = new byte[8];
-                        Array.Copy(_initializationVector, prevBlock, prevBlock.Length);
-                        for (var i = 0; i < result.Length / 8; i++)
-                        {
-                            var currentBlock = new byte[8];
-                            var tmp = new byte[8];
-
-                            Array.Copy(message, i * 8, currentBlock, 0, 8);
-                            Array.Copy(currentBlock, tmp , tmp.Length);
-
-                            currentBlock = Decrypt(currentBlock);
-                            currentBlock = BitConverter.GetBytes(
-                                BitConverter.ToUInt64(prevBlock, 0) ^ BitConverter.ToUInt64(currentBlock, 0) );
-                            
-                            Array.Copy(tmp, prevBlock, prevBlock.Length);
-                            Array.Copy(currentBlock, 0, result, i * 8, 8);
-                        }
-                    }
-                    break;
+                throw new ArgumentException($"Block length must be equal to {BlockSizeConst}.");
             }
-            Array.Resize(ref result, message.Length - result[^1]);
-            
-            return result;
+
+            block = Permutation(block, Tables.InitialPermutation);
+            block = _feistelNetwork.Decrypt(block, roundKeys);
+
+            return Permutation(block, Tables.FinalPermutation);
         }
 
-        private byte[] Encrypt(byte[] block)
+        public byte[][] GenerateRoundKeys(byte[] key)
         {
-            block = ByteArrayExtensions.Permutation64(block, Tables.InitialPermutation);
-            block = new FeistelNetwork(_roundKeys).Encrypt(block);
-            
-            return ByteArrayExtensions.Permutation64(block, Tables.FinalPermutation);
+            return _feistelNetwork.GenerateRoundKeys(key);
         }
-        private byte[] Decrypt(byte[] block)
+
+        public byte[] GenerateIV()
         {
-            block = ByteArrayExtensions.Permutation64(block, Tables.InitialPermutation);
-            block = new FeistelNetwork(_roundKeys).Decrypt(block);
-            
-            return ByteArrayExtensions.Permutation64(block, Tables.FinalPermutation);
+            return GenerateRandomByteArray(BlockSizeConst);
         }
     }
 }

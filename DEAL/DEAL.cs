@@ -1,86 +1,91 @@
 ﻿using System;
 using System.Linq;
-using Cryptography.Extensions;
+using DES;
+using static Cryptography.Extensions.ByteArrayExtensions;
+using SymmetricalAlgorithm;
 
 namespace DEAL
 {
-    public class DEAL
+    public class DEAL : ISymmetricalAlgorithm
     {
-        private readonly byte[][] _roundKeys;
-        private readonly byte[] _key;
-        
+        private static readonly DES.DES Des = new DES.DES();
+        private const int BlockSizeConst = 16;
+        private readonly ISymmetricalAlgorithm _feistelNetwork;
+
+        public int BlockSize => BlockSizeConst;
+
         public DEAL(byte[] key)
         {
-            _key = key;
-            _roundKeys = new KeysGenerator(_key).GenerateRoundKeys();
+            var numberOfRounds = key.Length == 32 ? 8 : 6;
+            var iv = Des.GenerateIV();
+            _feistelNetwork =
+                new FeistelNetwork(
+                    new DEALRoundKeysGenerator(Des, iv),
+                    new DEALFeistelFunction(Des, iv),
+                    BlockSizeConst,
+                    numberOfRounds);
         }
-        public byte[] EncryptBlock(byte[] message)
+
+        public byte[] Encrypt(byte[] block, byte[][] roundKeys)
         {
-            var original = ByteArrayExtensions.PaddingPKCs7(message);
-            var result = new byte[original.Length];
-            
-            for (var i = 0; i < result.Length / 16; i++)
+            if (block.Length != BlockSizeConst)
             {
-                var currentBlock = new byte[16];
-            
-                Array.Copy(original, i * 16, currentBlock, 0, 16);
-                currentBlock = Encrypt(currentBlock);
-                Array.Copy(currentBlock, 0, result, i * 16, 16);
+                throw new ArgumentException($"Block length must be equal to {BlockSizeConst}.");
             }
+            
+            var result = new byte[BlockSizeConst];
+
+            for (var i = 0; i < result.Length / BlockSizeConst; i++)
+            {
+                var currentBlock = new byte[BlockSizeConst];
+                Array.Copy(block, i * BlockSizeConst, currentBlock, 0, BlockSizeConst);
+                var (left, right) = (currentBlock.Take(BlockSizeConst / 2).ToArray(),
+                    currentBlock.Skip(BlockSizeConst / 2).ToArray());
+
+                currentBlock = _feistelNetwork.Encrypt(right.Concat(left).ToArray(), roundKeys);
+
+                (left, right) = (currentBlock.Take(BlockSizeConst / 2).ToArray(),
+                    currentBlock.Skip(BlockSizeConst / 2).ToArray());
+                Array.Copy(right.Concat(left).ToArray(), 0, result, i * BlockSizeConst, BlockSizeConst);
+            }
+
             return result;
         }
-        public byte[] DecryptBlock(byte[] message)
+
+        public byte[] Decrypt(byte[] block, byte[][] roundKeys)
         {
-            var result = new byte[message.Length];
-
-            for (var i = 0; i < result.Length / 16; i++)
+            if (block.Length != BlockSizeConst)
             {
-                var currentBlock = new byte[16];
+                throw new ArgumentException($"Block length must be equal to {BlockSizeConst}.");
+            }
+            
+            var result = new byte[BlockSizeConst];
 
-                Array.Copy(message, i * 16, currentBlock, 0, 16);
-                currentBlock = Decrypt(currentBlock);
-                Array.Copy(currentBlock, 0, result, i * 16, 16);
+            for (var i = 0; i < result.Length / BlockSizeConst; i++)
+            {
+                var currentBlock = new byte[BlockSizeConst];
+                Array.Copy(block, i * BlockSizeConst, currentBlock, 0, BlockSizeConst);
+                var (left, right) = (currentBlock.Take(BlockSizeConst / 2).ToArray(),
+                    currentBlock.Skip(BlockSizeConst / 2).ToArray());
+
+                currentBlock = _feistelNetwork.Decrypt(right.Concat(left).ToArray(), roundKeys);
+
+                (left, right) = (currentBlock.Take(BlockSizeConst / 2).ToArray(),
+                    currentBlock.Skip(BlockSizeConst / 2).ToArray());
+                Array.Copy(right.Concat(left).ToArray(), 0, result, i * BlockSizeConst, BlockSizeConst);
             }
 
-            Array.Resize(ref result, message.Length - result[^1]);
-            
             return result;
         }
-        
-        private byte[] Encrypt (byte[] block)
-        {
-            var (left, right) = (block.Take(block.Length / 2).ToArray(), block.Skip(block.Length / 2).ToArray());
-            
-            var numberOfRounds = 6;
-            if (_key.Length == 32) numberOfRounds = 8;
-            
-            for (var i = 0; i < numberOfRounds; i++)
-            {
-                var des = new DES.DES(_roundKeys[i], DES.EncryptionModes.CBC, new byte[]{1,1,1,1,1,1,1,1});
-                var tmp = left;
-                left = des.EncryptBlock(left).Xor(right);
-                right = tmp;
-            }
-            
-            return left.Concat(right).ToArray();
-        }
-        private byte[] Decrypt (byte[] block) 
-        {
 
-            var (left, right) = (block.Take(block.Length / 2).ToArray(), block.Skip(block.Length / 2).ToArray());
-            
-            var numberOfRounds = 6;
-            if (_key.Length == 32) numberOfRounds = 8;
-            
-            for (var i = numberOfRounds - 1; i >= 0; i--)
-            {
-                var des = new DES.DES(_roundKeys[i], DES.EncryptionModes.CBC, new byte[]{1,1,1,1,1,1,1,1});
-                var tmp = right;
-                right = des.EncryptBlock(right).Xor(left);
-                left = tmp;
-            }
-            
-            return left.Concat(right).ToArray();
+        public byte[][] GenerateRoundKeys(byte[] key)
+        {
+            return _feistelNetwork.GenerateRoundKeys(key);
+        }
+
+        public byte[] GenerateIV()
+        {
+            return GenerateRandomByteArray(BlockSize);
         }
     }
 }

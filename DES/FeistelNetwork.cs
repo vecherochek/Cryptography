@@ -1,70 +1,69 @@
 ﻿using System;
+using System.Linq;
 using Cryptography.Extensions;
+using SymmetricalAlgorithm;
 
 namespace DES
 {
-    public class FeistelNetwork
+    public class FeistelNetwork : ISymmetricalAlgorithm
     {
-        private readonly ulong[] _roundKeys;
-        
-        public FeistelNetwork(ulong[] roundKeys)
+        private readonly IRoundKeyGenerator _roundKeysGenerator;
+        private readonly IEncryptionTransformation _feistelFunction;
+        private readonly int _blockSize;
+        private readonly int _numberOfRounds;
+        public FeistelNetwork(IRoundKeyGenerator roundKeysGenerator, IEncryptionTransformation feistelFunction,
+            int blockSize, int numberOfRounds)
         {
-            _roundKeys = roundKeys;
+            _roundKeysGenerator = roundKeysGenerator;
+            _feistelFunction = feistelFunction;
+            _blockSize = blockSize;
+            _numberOfRounds = numberOfRounds;
         }
-        
-        public byte[] Encrypt (byte[] block) 
-        {
-            var number = BitConverter.ToUInt64(block, 0);
 
-            var left = number >> 32;
-            var right = (number & ((ulong)1 << 32) - 1);
-            
-            for (var i = 0; i < 16; i++)
+        public int BlockSize => _blockSize;
+        
+
+        public byte[] Encrypt(byte[] block, byte[][] roundKeys)
+        {
+            if (block.Length != _blockSize)
+            {
+                throw new ArgumentException($"Block length must be equal to {_blockSize}.");
+            }
+
+            var left = block.Take(_blockSize / 2).ToArray();
+            var right = block.Skip(_blockSize / 2).ToArray();
+            for (var i = 0; i < _numberOfRounds; i++)
             {
                 var tmp = right;
-                right = left ^ FeistelFunction(right, _roundKeys[i]);
+                right = left.Xor(_feistelFunction.Transform(right, roundKeys[i]));
                 left = tmp;
             }
 
-            return BitConverter.GetBytes((left << 32 | right));
+            return left.Concat(right).ToArray();
         }
-        
-        public byte[] Decrypt (byte[] block) 
+
+        public byte[] Decrypt(byte[] block, byte[][] roundKeys)
         {
-            var number = BitConverter.ToUInt64(block, 0);
+            if (block.Length != _blockSize)
+            {
+                throw new ArgumentException($"Block length must be equal to {_blockSize}.");
+            }
 
-            var left = number >> 32;
-            var right = (number & ((ulong)1 << 32) - 1);
-
-            for (var i = 15; i >= 0; i--)
+            var left = block.Take(_blockSize / 2).ToArray();
+            var right = block.Skip(_blockSize / 2).ToArray();
+            for (var i = _numberOfRounds - 1; i >= 0; i--)
             {
                 var tmp = left;
-                left = right ^ FeistelFunction(left, _roundKeys[i]);
+                left = right.Xor(_feistelFunction.Transform(left, roundKeys[i]));
                 right = tmp;
             }
 
-            return BitConverter.GetBytes((left << 32 | right));
+            return left.Concat(right).ToArray();
         }
-        
-        private static ulong FeistelFunction(ulong block, ulong roundKey)
+
+        public byte[][] GenerateRoundKeys(byte[] key)
         {
-            var value = BitConverter.GetBytes(block);
-            var expandingPermutation = BitConverter.ToUInt32(ByteArrayExtensions.Permutation32(value, Tables.ExpandingPermutation), 0);
-            var xor = expandingPermutation ^ roundKey;
-
-            ulong result = 0;
-            for (var i = 0; i < 8; i++)
-            {
-                var B = (xor >> (i * 6)) & ((uint)1 << 6) - 1;
-                var a = ((B >> 5) << 1) | (B & 1);
-                var b = (B >> 1) & 0b1111;
-
-                B = Tables.SBlocks[i, a, b];
-                result|= B << i * 4;
-            }
-            value = BitConverter.GetBytes(result);
-            
-            return BitConverter.ToUInt32(ByteArrayExtensions.Permutation32(value, Tables.PBlock), 0);
+            return _roundKeysGenerator.GenerateRoundKeys(key);
         }
     }
 }

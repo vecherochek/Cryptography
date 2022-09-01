@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using Cryptography.Extensions;
+using static Cryptography.Extensions.BigIntegerExtensions;
 
 namespace LUC
 {
@@ -17,8 +17,8 @@ namespace LUC
             
             BigInteger e = GetE();
             BigInteger D = message * message - 4;
-            BigInteger S = BigIntegerExtensions.Lcm(_primeNumbers.P - BigIntegerExtensions.Legendre(D, _primeNumbers.P), _primeNumbers.Q - BigIntegerExtensions.Legendre(D, _primeNumbers.Q));
-            BigInteger d = BigIntegerExtensions.MultiplicativeInverseModulo(e, S);
+            BigInteger S = Lcm(_primeNumbers.P - Legendre(D, _primeNumbers.P), _primeNumbers.Q - Legendre(D, _primeNumbers.Q));
+            BigInteger d = MultiplicativeInverseModulo(e, S);
             
             PublicKey = new LucKey(e, _primeNumbers.N);
             PrivateKey = new LucKey(d, _primeNumbers.N);
@@ -32,7 +32,7 @@ namespace LUC
             BigInteger e;
             do
             {
-                e = BigIntegerExtensions.GenerateRandomBigInteger(2, _primeNumbers.N);
+                e = GenerateRandomBigInteger(2, _primeNumbers.N);
             } while (BigInteger.GreatestCommonDivisor(e, number) != 1);
 
             return e;

@@ -12,7 +12,7 @@ namespace LUC
             Stopwatch stopwatch = new Stopwatch();
             
             //BigInteger message = new BigInteger(Encoding.Default.GetBytes("кекекекекекеекекекеекекеекекек"));
-            BigInteger message = new BigInteger(Encoding.Default.GetBytes("1159131296098765432234567890--98764123456789078654356789039936"));
+            BigInteger message = new BigInteger(Encoding.Default.GetBytes("11444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444"));
             Console.WriteLine("Размер сообщения в байтах: " + message.GetByteCount());
             
             stopwatch.Start();

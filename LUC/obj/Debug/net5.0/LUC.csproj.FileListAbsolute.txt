@@ -3,7 +3,6 @@ C:\Users\pbure\RiderProjects\Сryptography\LUC\bin\Debug\net5.0\LUC.deps.json
 C:\Users\pbure\RiderProjects\Сryptography\LUC\bin\Debug\net5.0\LUC.runtimeconfig.json
 C:\Users\pbure\RiderProjects\Сryptography\LUC\bin\Debug\net5.0\LUC.runtimeconfig.dev.json
 C:\Users\pbure\RiderProjects\Сryptography\LUC\bin\Debug\net5.0\LUC.dll
-C:\Users\pbure\RiderProjects\Сryptography\LUC\bin\Debug\net5.0\ref\LUC.dll
 C:\Users\pbure\RiderProjects\Сryptography\LUC\bin\Debug\net5.0\LUC.pdb
 C:\Users\pbure\RiderProjects\Сryptography\LUC\obj\Debug\net5.0\LUC.csproj.AssemblyReference.cache
 C:\Users\pbure\RiderProjects\Сryptography\LUC\obj\Debug\net5.0\LUC.GeneratedMSBuildEditorConfig.editorconfig
@@ -17,3 +16,4 @@ C:\Users\pbure\RiderProjects\Сryptography\LUC\obj\Debug\net5.0\LUC.genruntimeco
 C:\Users\pbure\RiderProjects\Сryptography\LUC\bin\Debug\net5.0\Cryptography.Extensions.dll
 C:\Users\pbure\RiderProjects\Сryptography\LUC\bin\Debug\net5.0\Cryptography.Extensions.pdb
 C:\Users\pbure\RiderProjects\Сryptography\LUC\obj\Debug\net5.0\LUC.csproj.CopyComplete
+C:\Users\pbure\RiderProjects\Сryptography\LUC\obj\Debug\net5.0\refint\LUC.dll

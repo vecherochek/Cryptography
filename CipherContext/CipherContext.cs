@@ -22,7 +22,7 @@ namespace CipherContext
         private readonly byte[] _key;
         private readonly object[] _values;
         private IEncryptionMode _encryptionMode;
-        public ISymmetricalAlgorithm Encoder { get; set; }
+        private ISymmetricalAlgorithm _encoder;
 
         public EncryptionModeList EncryptionMode
         {
@@ -30,40 +30,52 @@ namespace CipherContext
             {
                 _encryptionMode = value switch
                 {
-                    EncryptionModeList.ECB => new ECB(Encoder),
-                    EncryptionModeList.CBC => new CBC(Encoder),
-                    EncryptionModeList.CFB => new CFB(Encoder),
-                    EncryptionModeList.OFB => new OFB(Encoder),
-                    EncryptionModeList.CTR => new CTR(Encoder),
-                    EncryptionModeList.RD => new RD(Encoder),
-                    EncryptionModeList.RDH => new RDH(Encoder),
+                    EncryptionModeList.ECB => new ECB(_encoder),
+                    EncryptionModeList.CBC => new CBC(_encoder),
+                    EncryptionModeList.CFB => new CFB(_encoder),
+                    EncryptionModeList.OFB => new OFB(_encoder),
+                    EncryptionModeList.CTR => new CTR(_encoder),
+                    EncryptionModeList.RD => new RD(_encoder),
+                    EncryptionModeList.RDH => new RDH(_encoder),
                     _ => throw new ArgumentOutOfRangeException(nameof(_encryptionMode), _encryptionMode,
                         "No such encryption mode :(")
                 };
             }
         }
-        
-        public CipherContext(byte[] key, params object[] values)
+
+        public CipherContext(ISymmetricalAlgorithm encoder, byte[] key, params object[] values)
         {
+            _encoder = encoder;
             _key = key;
             _values = values;
         }
 
         public async Task<byte[]> EncryptAsync(byte[] message, byte[][] roundKeys)
         {
-            //Console.WriteLine($"я начал работу\n");
-            var original = PaddingPKCs7(message, Encoder.BlockSize);
-            return await _encryptionMode.EncryptBlockAsync(original, roundKeys, _values).ConfigureAwait(false);
+            /*await Task.Delay(3000);
+            Console.WriteLine("ger-ger");*/
+            return await Task.Run(() => Encrypt(message, roundKeys), default).ConfigureAwait(false);
         }
 
         public async Task<byte[]> DecryptAsync(byte[] message, byte[][] roundKeys)
         {
-            return await _encryptionMode.DecryptBlockAsync(message, roundKeys, _values).ConfigureAwait(false);
+            return await Task.Run(() => Decrypt(message, roundKeys), default).ConfigureAwait(false);
+        }
+
+        public byte[] Encrypt(byte[] message, byte[][] roundKeys)
+        {
+            var original = PaddingPKCs7(message, _encoder.BlockSize);
+            return _encryptionMode.EncryptBlock(original, roundKeys, _values);
+        }
+
+        public byte[] Decrypt(byte[] message, byte[][] roundKeys)
+        {
+            return _encryptionMode.DecryptBlock(message, roundKeys, _values);
         }
 
         public byte[][] GenerateRoundKeys()
         {
-            return Encoder.GenerateRoundKeys(_key);
+            return _encoder.GenerateRoundKeys(_key);
         }
     }
 }

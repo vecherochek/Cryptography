@@ -16,7 +16,7 @@ namespace CipherContext.EncryptionModes
             _encoder = encryptor;
         }
 
-        public async Task<byte[]> EncryptBlockAsync(byte[] message, byte[][] roundKeys, object[] values)
+        public byte[] EncryptBlock(byte[] message, byte[][] roundKeys, params object[] values)
         {
             var initial = new byte[_encoder.BlockSize];
             var hash = new byte[_encoder.BlockSize];
@@ -46,11 +46,11 @@ namespace CipherContext.EncryptionModes
                 }, default));
             }
 
-            var result = await Task.WhenAll(tasks);
-            return initialBlock.Concat(result.SelectMany(block => block).ToArray()).ToArray();
+            var result = Task.WhenAll(tasks).ConfigureAwait(false);
+            return initialBlock.Concat(result.GetAwaiter().GetResult().SelectMany(block => block).ToArray()).ToArray();
         }
 
-        public async Task<byte[]> DecryptBlockAsync(byte[] message, byte[][] roundKeys, params object[] values)
+        public byte[] DecryptBlock(byte[] message, byte[][] roundKeys, params object[] values)
         {
             var initial = _encoder.Decrypt(message.Take(_encoder.BlockSize).ToArray(), roundKeys);
             var delta = initial.Skip(initial.Length - 8).ToArray();
@@ -70,8 +70,8 @@ namespace CipherContext.EncryptionModes
                 }, default));
             }
 
-            var decrypted = await Task.WhenAll(tasks);
-            var result = decrypted.SelectMany(block => block).ToArray();
+            var decrypted = Task.WhenAll(tasks).ConfigureAwait(false);
+            var result = decrypted.GetAwaiter().GetResult().SelectMany(block => block).ToArray();
             Array.Resize(ref result, result.Length - result[^1]);
             return result;
         }

@@ -16,7 +16,7 @@ namespace CipherContext.EncryptionModes
             _encoder = encryptor;
         }
 
-        public async Task<byte[]> EncryptBlockAsync(byte[] message, byte[][] roundKeys, object[] initializationVector)
+        public byte[] EncryptBlock(byte[] message, byte[][] roundKeys, object[] initializationVector)
         {
             var initial = new byte[_encoder.BlockSize];
             Array.Copy((byte[]) initializationVector[0], initial, _encoder.BlockSize);
@@ -40,16 +40,16 @@ namespace CipherContext.EncryptionModes
                 }, default));
             }
 
-            var result = await Task.WhenAll(tasks).ConfigureAwait(false);
-            return initialBlock.Concat(result.SelectMany(block => block).ToArray()).ToArray();
+            var result = Task.WhenAll(tasks).ConfigureAwait(false);
+            return initialBlock.Concat(result.GetAwaiter().GetResult().SelectMany(block => block).ToArray()).ToArray();
         }
 
-        public async Task<byte[]> DecryptBlockAsync(byte[] message, byte[][] roundKeys, params object[] values)
+        public byte[] DecryptBlock(byte[] message, byte[][] roundKeys, params object[] values)
         {
             var initial = _encoder.Decrypt(message.Take(_encoder.BlockSize).ToArray(), roundKeys);
             var delta = initial.Skip(initial.Length - 8).ToArray();
             delta[0] |= 0x01;
-            
+
             var tasks = new List<Task<byte[]>>();
             for (var i = 1; i < message.Length / _encoder.BlockSize; i++)
             {
@@ -63,8 +63,8 @@ namespace CipherContext.EncryptionModes
                 }, default));
             }
 
-            var decrypted = await Task.WhenAll(tasks).ConfigureAwait(false);
-            var result = decrypted.SelectMany(block => block).ToArray();
+            var decrypted = Task.WhenAll(tasks).ConfigureAwait(false);
+            var result = decrypted.GetAwaiter().GetResult().SelectMany(block => block).ToArray();
             Array.Resize(ref result, result.Length - result[^1]);
             return result;
         }

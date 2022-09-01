@@ -16,7 +16,7 @@ namespace CipherContext.EncryptionModes
             _encoder = encryptor;
         }
 
-        public async Task<byte[]> EncryptBlockAsync(byte[] message, byte[][] roundKeys, object[] initializationVector)
+        public byte[] EncryptBlock(byte[] message, byte[][] roundKeys, object[] initializationVector)
         {
             var counter = new byte[_encoder.BlockSize];
 
@@ -34,14 +34,14 @@ namespace CipherContext.EncryptionModes
                 }, default));
             }
 
-            var result = await Task.WhenAll(tasks).ConfigureAwait(false);
+            var result = Task.WhenAll(tasks).ConfigureAwait(false);
 
-            return result.SelectMany(block => block).ToArray();
+            return result.GetAwaiter().GetResult().SelectMany(block => block).ToArray();
         }
 
-        public async Task<byte[]> DecryptBlockAsync(byte[] message, byte[][] roundKeys, object[] initializationVector)
+        public byte[] DecryptBlock(byte[] message, byte[][] roundKeys, object[] initializationVector)
         {
-            var result = await EncryptBlockAsync(message, roundKeys, initializationVector);
+            var result = EncryptBlock(message, roundKeys, initializationVector);
             Array.Resize(ref result, message.Length - result[^1]);
 
             return result;

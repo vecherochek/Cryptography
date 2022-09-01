@@ -29,9 +29,8 @@ namespace DEAL
 
         public byte[][] GenerateRoundKeys(byte[] key)
         {
-            var encoder = new CipherContext.CipherContext(BitConverter.GetBytes(ConstKey), _iv)
+            var encoder = new CipherContext.CipherContext(_des, BitConverter.GetBytes(ConstKey), _iv)
             {
-                Encoder = _des,
                 EncryptionMode = EncryptionModeList.CBC
             };
             var desRoundKeys = encoder.GenerateRoundKeys();
@@ -47,15 +46,14 @@ namespace DEAL
                         key.Skip(key.Length / 2).ToArray()
                     };
 
-                    _roundKeys[0] = encoder.EncryptAsync(k[0], desRoundKeys).GetAwaiter().GetResult();
-                    _roundKeys[1] = encoder.EncryptAsync(k[1].Xor(_roundKeys[0]), desRoundKeys)
-                        .GetAwaiter().GetResult();
+                    _roundKeys[0] = encoder.Encrypt(k[0], desRoundKeys);
+                    _roundKeys[1] = encoder.Encrypt(k[1].Xor(_roundKeys[0]), desRoundKeys);
 
                     for (var i = 0; i < 4; i++)
                     {
-                        _roundKeys[i + 2] = encoder.EncryptAsync(k[i % 2]
+                        _roundKeys[i + 2] = encoder.Encrypt(k[i % 2]
                             .Xor(_bit64OriginalString[i])
-                            .Xor(_roundKeys[i + 1]), desRoundKeys).GetAwaiter().GetResult();
+                            .Xor(_roundKeys[i + 1]), desRoundKeys);
                     }
 
                     break;
@@ -72,19 +70,18 @@ namespace DEAL
                         key.Skip(key.Length / 3 * 2).ToArray()
                     };
 
-                    _roundKeys[0] = encoder.EncryptAsync(k[0], desRoundKeys).GetAwaiter().GetResult();
+                    _roundKeys[0] = encoder.Encrypt(k[0], desRoundKeys);
 
                     for (var i = 0; i < 2; i++)
                     {
-                        _roundKeys[i + 1] = encoder.EncryptAsync(k[i % 3].Xor(_roundKeys[i]), desRoundKeys)
-                            .GetAwaiter().GetResult();
+                        _roundKeys[i + 1] = encoder.Encrypt(k[i % 3].Xor(_roundKeys[i]), desRoundKeys);
                     }
 
                     for (var i = 0; i < 3; i++)
                     {
-                        _roundKeys[i + 3] = encoder.EncryptAsync(k[i % 3]
+                        _roundKeys[i + 3] = encoder.Encrypt(k[i % 3]
                             .Xor(_bit64OriginalString[i])
-                            .Xor(_roundKeys[i + 1]), desRoundKeys).GetAwaiter().GetResult();
+                            .Xor(_roundKeys[i + 1]), desRoundKeys);
                     }
 
                     break;
@@ -101,25 +98,25 @@ namespace DEAL
                         key.Skip(key.Length / 4 * 3).ToArray()
                     };
 
-                    _roundKeys[0] = encoder.EncryptAsync(k[0], desRoundKeys).GetAwaiter().GetResult();
+                    _roundKeys[0] = encoder.Encrypt(k[0], desRoundKeys);
 
                     for (var i = 0; i < 3; i++)
                     {
-                        _roundKeys[i + 1] = encoder.EncryptAsync(k[i % 4].Xor(_roundKeys[i]), desRoundKeys)
-                            .GetAwaiter().GetResult();
+                        _roundKeys[i + 1] = encoder.Encrypt(k[i % 4].Xor(_roundKeys[i]), desRoundKeys);
                     }
 
                     for (var i = 0; i < 4; i++)
                     {
-                        _roundKeys[i + 4] = encoder.EncryptAsync(k[i % 4]
+                        _roundKeys[i + 4] = encoder.Encrypt(k[i % 4]
                             .Xor(_bit64OriginalString[i])
-                            .Xor(_roundKeys[i + 1]), desRoundKeys).GetAwaiter().GetResult();
+                            .Xor(_roundKeys[i + 1]), desRoundKeys);
                     }
 
                     break;
                 }
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(key), key.Length, "Invalid key");
+                    throw new ArgumentOutOfRangeException(nameof(key), key.Length,
+                        "Invalid key. The allowed key size is 16/24/32 byte");
             }
 
             return _roundKeys;

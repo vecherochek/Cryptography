@@ -2,6 +2,20 @@
   "version": 3,
   "targets": {
     "net5.0": {
+      "CipherContext/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v5.0",
+        "dependencies": {
+          "Cryptography.Extensions": "1.0.0",
+          "SymmetricalAlgorithm": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/CipherContext.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/CipherContext.dll": {}
+        }
+      },
       "Cryptography.Extensions/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v5.0",
@@ -16,7 +30,8 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v5.0",
         "dependencies": {
-          "Cryptography.Extensions": "1.0.0"
+          "Cryptography.Extensions": "1.0.0",
+          "SymmetricalAlgorithm": "1.0.0"
         },
         "compile": {
           "bin/placeholder/DES.dll": {}
@@ -24,10 +39,25 @@
         "runtime": {
           "bin/placeholder/DES.dll": {}
         }
+      },
+      "SymmetricalAlgorithm/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v5.0",
+        "compile": {
+          "bin/placeholder/SymmetricalAlgorithm.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SymmetricalAlgorithm.dll": {}
+        }
       }
     }
   },
   "libraries": {
+    "CipherContext/1.0.0": {
+      "type": "project",
+      "path": "../CipherContext/CipherContext.csproj",
+      "msbuildProject": "../CipherContext/CipherContext.csproj"
+    },
     "Cryptography.Extensions/1.0.0": {
       "type": "project",
       "path": "../Cryptography.Extensions/Cryptography.Extensions.csproj",
@@ -37,10 +67,16 @@
       "type": "project",
       "path": "../DES/DES.csproj",
       "msbuildProject": "../DES/DES.csproj"
+    },
+    "SymmetricalAlgorithm/1.0.0": {
+      "type": "project",
+      "path": "../SymmetricalAlgorithm/SymmetricalAlgorithm.csproj",
+      "msbuildProject": "../SymmetricalAlgorithm/SymmetricalAlgorithm.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net5.0": [
+      "CipherContext >= 1.0.0",
       "Cryptography.Extensions >= 1.0.0",
       "DES >= 1.0.0"
     ]
@@ -72,6 +108,9 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
+            "C:\\Users\\pbure\\RiderProjects\\Сryptography\\CipherContext\\CipherContext.csproj": {
+              "projectPath": "C:\\Users\\pbure\\RiderProjects\\Сryptography\\CipherContext\\CipherContext.csproj"
+            },
             "C:\\Users\\pbure\\RiderProjects\\Сryptography\\Cryptography.Extensions\\Cryptography.Extensions.csproj": {
               "projectPath": "C:\\Users\\pbure\\RiderProjects\\Сryptography\\Cryptography.Extensions\\Cryptography.Extensions.csproj"
             },
@@ -105,7 +144,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
       }
     }
   }

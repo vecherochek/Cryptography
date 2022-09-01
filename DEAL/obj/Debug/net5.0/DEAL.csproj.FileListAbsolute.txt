@@ -1,13 +1,5 @@
-C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\DES.deps.json
-C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\DES.runtimeconfig.json
-C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\DES.runtimeconfig.dev.json
-C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\DES.exe
-C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\DEAL.exe
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\DEAL.deps.json
-C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\DEAL.runtimeconfig.json
-C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\DEAL.runtimeconfig.dev.json
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\DEAL.dll
-C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\ref\DEAL.dll
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\DEAL.pdb
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\DES.dll
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\DES.pdb
@@ -20,6 +12,10 @@ C:\Users\pbure\RiderProjects\Сryptography\DEAL\obj\Debug\net5.0\DEAL.csproj.Cop
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\obj\Debug\net5.0\DEAL.dll
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\obj\Debug\net5.0\ref\DEAL.dll
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\obj\Debug\net5.0\DEAL.pdb
-C:\Users\pbure\RiderProjects\Сryptography\DEAL\obj\Debug\net5.0\DEAL.genruntimeconfig.cache
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\Cryptography.Extensions.dll
 C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\Cryptography.Extensions.pdb
+C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\CipherContext.dll
+C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\SymmetricalAlgorithm.dll
+C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\CipherContext.pdb
+C:\Users\pbure\RiderProjects\Сryptography\DEAL\bin\Debug\net5.0\SymmetricalAlgorithm.pdb
+C:\Users\pbure\RiderProjects\Сryptography\DEAL\obj\Debug\net5.0\refint\DEAL.dll

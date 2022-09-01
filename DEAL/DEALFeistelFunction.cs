@@ -16,18 +16,12 @@ namespace DEAL
 
         public byte[] Transform(byte[] block, byte[] roundKey)
         {
-            var encoder = new CipherContext.CipherContext(roundKey, _iv)
+            var encoder = new CipherContext.CipherContext(_des, roundKey, _iv)
             {
-                Encoder = _des,
                 EncryptionMode = EncryptionModeList.CBC
             };
-            //encoder.EncryptAsync(block, encoder.GenerateRoundKeys()).RunSynchronously();
-            
-            //var task = Task.Run(() => encoder.EncryptAsync(block, encoder.GenerateRoundKeys())).ConfigureAwait(false);
-            //task.RunSynchronously();
-            //return task.GetAwaiter().GetResult();
-            return encoder.EncryptAsync(block, encoder.GenerateRoundKeys()).ConfigureAwait(false).GetAwaiter().GetResult();
-            //чо блин не так
+
+            return encoder.Encrypt(block, encoder.GenerateRoundKeys());
         }
     }
 }

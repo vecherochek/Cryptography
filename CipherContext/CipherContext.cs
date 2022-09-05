@@ -50,16 +50,16 @@ namespace CipherContext
             _values = values;
         }
 
-        public async Task<byte[]> EncryptAsync(byte[] message, byte[][] roundKeys)
+        public Task<byte[]> EncryptAsync(byte[] message, byte[][] roundKeys)
         {
             /*await Task.Delay(3000);
             Console.WriteLine("ger-ger");*/
-            return await Task.Run(() => Encrypt(message, roundKeys), default).ConfigureAwait(false);
+            return Task.Run(() => Encrypt(message, roundKeys), default);
         }
 
-        public async Task<byte[]> DecryptAsync(byte[] message, byte[][] roundKeys)
+        public Task<byte[]> DecryptAsync(byte[] message, byte[][] roundKeys)
         {
-            return await Task.Run(() => Decrypt(message, roundKeys), default).ConfigureAwait(false);
+            return Task.Run(() => Decrypt(message, roundKeys), default);
         }
 
         public byte[] Encrypt(byte[] message, byte[][] roundKeys)

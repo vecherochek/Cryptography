@@ -31,7 +31,7 @@ namespace DEAL
         {
             var encoder = new CipherContext.CipherContext(_des, BitConverter.GetBytes(ConstKey), _iv)
             {
-                EncryptionMode = EncryptionModeList.CBC
+                EncryptionMode = CipherContext.CipherContext.EncryptionModeList.CBC
             };
             var desRoundKeys = encoder.GenerateRoundKeys();
             switch (key.Length)

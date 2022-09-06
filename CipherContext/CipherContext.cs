@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using CipherContext.EncryptionModes;
 using SymmetricalAlgorithm;
@@ -6,23 +7,23 @@ using static Cryptography.Extensions.ByteArrayExtensions;
 
 namespace CipherContext
 {
-    public enum EncryptionModeList
-    {
-        ECB,
-        CBC,
-        CFB,
-        OFB,
-        CTR,
-        RD,
-        RDH
-    };
-
     public class CipherContext
     {
+        public enum EncryptionModeList
+        {
+            ECB,
+            CBC,
+            CFB,
+            OFB,
+            CTR,
+            RD,
+            RDH
+        };
+        
         private readonly byte[] _key;
         private readonly object[] _values;
         private IEncryptionMode _encryptionMode;
-        private ISymmetricalAlgorithm _encoder;
+        private readonly ISymmetricalAlgorithm _encoder;
 
         public EncryptionModeList EncryptionMode
         {
@@ -50,16 +51,19 @@ namespace CipherContext
             _values = values;
         }
 
-        public Task<byte[]> EncryptAsync(byte[] message, byte[][] roundKeys)
+        public Task<byte[]> EncryptAsync(byte[] message, byte[][] roundKeys, CancellationToken token = default)
         {
+            token.ThrowIfCancellationRequested();
             /*await Task.Delay(3000);
             Console.WriteLine("ger-ger");*/
-            return Task.Run(() => Encrypt(message, roundKeys), default);
+            return Task.Run(() => Encrypt(message, roundKeys), token);
         }
 
-        public Task<byte[]> DecryptAsync(byte[] message, byte[][] roundKeys)
+        public Task<byte[]> DecryptAsync(byte[] message, byte[][] roundKeys, CancellationToken token = default)
         {
-            return Task.Run(() => Decrypt(message, roundKeys), default);
+            token.ThrowIfCancellationRequested();
+            
+            return Task.Run(() => Decrypt(message, roundKeys), token);
         }
 
         public byte[] Encrypt(byte[] message, byte[][] roundKeys)

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using ClientWPF.MVVM.View;
 using ClientWPF.MVVM.ViewModel;
 using DryIoc;
 
@@ -16,15 +17,12 @@ namespace ClientWPF
             base.OnStartup(e);
 
             Container = new Container();
-
-            // Grpc client
-            //Views
+            
             Container.Register<MainWindow>(Reuse.Singleton);
+            Container.Register<HelloWindow>(Reuse.Singleton);
 
-            //ViewModels
-
-            var reg = Container.Resolve<MainWindow>();
-            //reg.DataContext = Container.Resolve<MainWindowViewModel>();
+            var reg = Container.Resolve<HelloWindow>();
+            reg.DataContext = new HelloWindowViewModel(reg);
             reg.Show();
         }
     }

@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWPF>true</UseWPF>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="MVVM\Model" />
+      <Folder Include="UserControls" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="DryIoc" Version="5.2.2" />
+      <PackageReference Include="MaterialDesignThemes" Version="4.7.0-ci304" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Resources\Icons\AttachmentGray.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Resources\Icons\AttachmentYellow.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Resources\Icons\SendMessageGray.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Resources\Icons\SendMessageYellow.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Cryptography.Extensions\Cryptography.Extensions.csproj" />
+      <ProjectReference Include="..\LUC\LUC.csproj" />
+    </ItemGroup>
+
+</Project>

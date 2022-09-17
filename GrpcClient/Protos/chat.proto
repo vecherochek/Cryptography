@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcClient";
+
+package chat;
+
+import "google/protobuf/empty.proto";
+
+service Chat {
+  rpc SendMessage (MessageInput) returns (google.protobuf.Empty);
+  rpc SendKey (KeyInput) returns (google.protobuf.Empty);
+  rpc Login (UserRequest) returns (ServerResponse);
+  rpc Logout (UserRequest) returns (google.protobuf.Empty);
+  rpc GetKey (UserRequest) returns (KeyOutput);
+}
+
+message MessageInput {
+  string user = 1;
+  bytes message = 2;
+}
+
+message ServerResponse{
+  uint32 code = 1;
+  optional string message = 2;
+}
+
+message UserRequest {
+  string user = 1;
+}
+
+message KeyInput {
+  bytes key = 1;
+}
+
+message KeyOutput {
+  bytes key = 1;
+}

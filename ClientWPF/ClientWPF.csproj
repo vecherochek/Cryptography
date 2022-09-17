@@ -5,6 +5,7 @@
         <TargetFramework>net6.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
+        <ApplicationIcon>Resources\Icons\icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -34,7 +35,14 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Cryptography.Extensions\Cryptography.Extensions.csproj" />
+      <ProjectReference Include="..\GrpcClient\GrpcClient.csproj" />
       <ProjectReference Include="..\LUC\LUC.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Resources\Icons\icon.ico">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

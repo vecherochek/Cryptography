@@ -12,10 +12,7 @@
                 <ResourceDictionary Source="Themes/ButtonAttachFileTheme.xaml" />
                 <ResourceDictionary Source="Themes/ButtonSendMessageTheme.xaml" />
                 
-                <ResourceDictionary Source="Themes/TextBoxDealKeyTheme.xaml" />
-                <ResourceDictionary Source="Themes/TextBoxLucPrKeyTheme.xaml" />
-                <ResourceDictionary Source="Themes/TextBoxLucPubKeyTheme.xaml" />
-                <ResourceDictionary Source="Themes/TextBoxNTheme.xaml" />
+                <ResourceDictionary Source="Themes/TextBoxTheme.xaml" />
                 
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
@@ -25,11 +22,9 @@
              <DataTemplate DataType="{x:Type viewModel:AdminPanelViewModel}">
                  <view:AdminPanelView/>
              </DataTemplate>
-             
-             <DataTemplate DataType="{x:Type viewModel:MainWindowViewModel}">
-                 <local:MainWindow/>
+             <DataTemplate DataType="{x:Type viewModel:UserPanelViewModel}">
+                 <view:UserPanelView/>
              </DataTemplate>
-             
          </ResourceDictionary>
     </Application.Resources>
 </Application>

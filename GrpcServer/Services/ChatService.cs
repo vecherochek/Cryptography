@@ -12,6 +12,7 @@ public class ChatService : Chat.ChatBase
 {
     private readonly ILogger<ChatService> _logger;
     private int _usersId = 1;
+    private byte[]? _dealKey;
 
     private readonly User _server = new User
     {
@@ -39,7 +40,7 @@ public class ChatService : Chat.ChatBase
             return Task.FromResult(new ServerResponse
             {
                 Code = 1,
-                Message = ByteString.CopyFrom(Encoding.Default.GetBytes("Such a username already exists"))
+                Message = "Such a username already exists"
             });
         }
 
@@ -93,11 +94,21 @@ public class ChatService : Chat.ChatBase
         );
         return Task.FromResult(new Empty());
     }
-    
+
     public override Task<Empty> SendKey(KeyInput request, ServerCallContext context)
     {
         _logger.LogInformation($"\n[{DateTime.UtcNow}]: A new symmetric algorithm key has been created\n");
-        
+        _dealKey = request.Key.ToByteArray();
         return Task.FromResult(new Empty());
+    }
+
+    public override Task<KeyOutput> GetKey(UserRequest request, ServerCallContext context)
+    {
+        _logger.LogInformation($"\n[{DateTime.UtcNow}]: {request.User} received the key\n");
+        return Task.FromResult(
+            new KeyOutput
+            {
+                Key = ByteString.CopyFrom(_dealKey)
+            });
     }
 }

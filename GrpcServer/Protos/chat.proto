@@ -11,6 +11,7 @@ service Chat {
   rpc SendKey (KeyInput) returns (google.protobuf.Empty);
   rpc Login (UserRequest) returns (ServerResponse);
   rpc Logout (UserRequest) returns (google.protobuf.Empty);
+  rpc GetKey (UserRequest) returns (KeyOutput);
 }
 
 message MessageInput {
@@ -20,7 +21,7 @@ message MessageInput {
 
 message ServerResponse{
   uint32 code = 1;
-  optional bytes message = 2;
+  optional string message = 2;
 }
 
 message UserRequest {
@@ -28,5 +29,9 @@ message UserRequest {
 }
 
 message KeyInput {
+  bytes key = 1;
+}
+
+message KeyOutput {
   bytes key = 1;
 }

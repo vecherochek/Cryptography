@@ -15,24 +15,17 @@ public class HelloWindowViewModel : ObservableObject
     public HelloWindowViewModel(Window owner)
     {
         _owner = owner;
+        OpenAdminWindowCommand = new RelayCommand(o => OpenMainWindow(new AdminPanelViewModel()));
+        OpenUserWindowCommand = new RelayCommand(o => OpenMainWindow(new UserPanelViewModel()));
+    }
 
-        OpenAdminWindowCommand = new RelayCommand(o =>
-        {
-            var a = App.Container.Resolve<MainWindow>();
-            var viewModel = App.Container.Resolve<MainWindowViewModel>();
-            viewModel.CurrentView = new AdminPanelViewModel();
-            a.DataContext = viewModel;
-            a.Show();
-            _owner.Close();
-        });
-        OpenUserWindowCommand = new RelayCommand(o =>
-        {
-            var a = App.Container.Resolve<MainWindow>();
-            var viewModel = App.Container.Resolve<MainWindowViewModel>();
-            viewModel.CurrentView = new UserPanelViewModel();
-            a.DataContext = viewModel;
-            a.Show();
-            _owner.Close();
-        });
+    private void OpenMainWindow(object panel)
+    {
+        var a = App.Container.Resolve<MainWindow>();
+        var viewModel = App.Container.Resolve<MainWindowViewModel>();
+        viewModel.CurrentView = panel;
+        a.DataContext = viewModel;
+        a.Show();
+        _owner.Close();
     }
 }

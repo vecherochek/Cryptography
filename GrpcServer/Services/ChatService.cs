@@ -12,7 +12,7 @@ public class ChatService : Chat.ChatBase
 {
     private readonly ILogger<ChatService> _logger;
     private int _usersId = 1;
-    private byte[]? _dealKey;
+    private static ByteString ServerKey{ get; set; }
 
     private readonly User _server = new User
     {
@@ -29,10 +29,7 @@ public class ChatService : Chat.ChatBase
         try
         {
             UserDictionary.users.Add(
-                new User
-                {
-                    UserName = request.User
-                },
+                request.User,
                 _usersId);
         }
         catch (Exception e)
@@ -64,11 +61,7 @@ public class ChatService : Chat.ChatBase
     {
         var message = $"\n[{DateTime.UtcNow}]{request.User} has disconnected!\n";
         _logger.LogInformation(message);
-        UserDictionary.users.Remove(
-            new User
-            {
-                UserName = request.User
-            });
+        UserDictionary.users.Remove(request.User);
         MessageQueue.messages.Add(new Message
             {
                 MessageId = new Random().Next(0, int.MaxValue),
@@ -98,7 +91,8 @@ public class ChatService : Chat.ChatBase
     public override Task<Empty> SendKey(KeyInput request, ServerCallContext context)
     {
         _logger.LogInformation($"\n[{DateTime.UtcNow}]: A new symmetric algorithm key has been created\n");
-        _dealKey = request.Key.ToByteArray();
+        ServerKey = request.Key;
+        
         return Task.FromResult(new Empty());
     }
 
@@ -108,7 +102,7 @@ public class ChatService : Chat.ChatBase
         return Task.FromResult(
             new KeyOutput
             {
-                Key = ByteString.CopyFrom(_dealKey)
+                Key = ServerKey
             });
     }
 }

@@ -2,5 +2,5 @@
 
 public class UserDictionary
 {
-    public static Dictionary<User, int> users = new Dictionary<User, int >();
+    public static Dictionary<string, int> users = new Dictionary<string, int >();
 }

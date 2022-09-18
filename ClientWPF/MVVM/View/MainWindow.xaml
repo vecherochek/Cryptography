@@ -79,7 +79,7 @@
                             Foreground="Gray"
                             FontSize="14"
                             Style="{StaticResource ButtonNormBackgroundTheme}"
-                            Click="Close_Click"
+                            Command="{Binding CloseCommand}"
                             Margin="5, 0" />
                 </StackPanel>
             </Grid>
@@ -96,10 +96,10 @@
                     BorderBrush="#252525"
                     FontWeight="Bold"
                     Foreground="White"
-                    FontSize="16" 
-                    Command="{Binding ConnectToTheServerCommand}"/>
+                    FontSize="16"
+                    Command="{Binding ConnectToTheServerCommand}" />
         </Border>
-        
+
         <StackPanel Grid.Row="3"
                     Grid.Column="0"
                     Background="#252525">
@@ -114,8 +114,8 @@
                      VerticalContentAlignment="Center"
                      HorizontalAlignment="Left"
                      Margin="15, 5, 0,5"
-                     Style="{StaticResource TextBoxNicknameTheme}" 
-                     Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"/>
+                     Style="{StaticResource TextBoxNicknameTheme}"
+                     Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
         </StackPanel>
         <Grid Grid.Row="3"
               Grid.Column="1"
@@ -131,27 +131,64 @@
             <Button Grid.Column="0" Width="35"
                     Height="35"
                     Margin="10, 5, 10, 0"
-                    Cursor="Hand" 
-                    Style="{StaticResource ButtonAttachFileTheme}"/>
+                    Cursor="Hand"
+                    Style="{StaticResource ButtonAttachFileTheme}" />
             <TextBox Grid.Column="1"
                      Height="55"
                      VerticalContentAlignment="Center"
                      Margin="0, 10, 0,5"
-                     Style="{StaticResource TextBoxSendMessageTheme}" />
+                     Style="{StaticResource TextBoxSendMessageTheme}"
+                     Text="{Binding UserMessage, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             <Button Grid.Column="2" Width="35"
                     Height="35"
                     Margin="10, 5, 10, 0"
-                    Cursor="Hand" 
-                    Style="{StaticResource ButtonSendMessageTheme}"/>
+                    Cursor="Hand"
+                    Style="{StaticResource ButtonSendMessageTheme}"
+                    Command="{Binding SendMessageCommand}" />
         </Grid>
         <ContentControl Grid.Row="2"
                         Grid.Column="0"
                         Content="{Binding CurrentView}">
         </ContentControl>
-        <TextBox Grid.Row="2" Grid.Column="1"
-                 Height="55"
-                 VerticalContentAlignment="Center"
-                 Margin="0, 10, 0,5"
-                 Text="{Binding Answer, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+
+        <TextBox Grid.Row="1"
+                 Grid.RowSpan="2"
+                 Grid.Column="1"
+                 VerticalContentAlignment="Top"
+                 Margin="15"
+                 TextWrapping="Wrap"
+                 Foreground="White"
+                 FontSize="14"
+                 Text="{Binding Messages, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                 IsReadOnly="True"
+                 VerticalScrollBarVisibility="Auto"/>
+        <!--<ScrollViewer Grid.Row="1"
+                      Grid.RowSpan="2"
+                      Grid.Column="1"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto"
+                      >
+            <TextBox
+                VerticalContentAlignment="Top"
+                Margin="15"
+                Foreground="White"
+                FontSize="14"
+                Text="{Binding Answer, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                IsReadOnly="True" />
+        </ScrollViewer>-->
+        <!--<ListView Grid.Row="2"
+                  Grid.Column="1"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">~1~ItemsSource="{Binding Messages}"@1@
+
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel></StackPanel>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+
+        </ListView>-->
     </Grid>
 </Window>

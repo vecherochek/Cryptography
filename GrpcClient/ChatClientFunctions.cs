@@ -9,10 +9,14 @@ public class ChatClientFunctions
     private GrpcChannel _channel;
     private Chat.ChatClient _client;
 
-    public async Task<ServerResponse> Login(string username)
+    public ChatClientFunctions()
     {
         _channel = GrpcChannel.ForAddress("http://localhost:5259");
         _client = new Chat.ChatClient(_channel);
+    }
+
+    public async Task<ServerResponse> Login(string username)
+    {
         return await _client.LoginAsync(new UserRequest {User = username});
     }
 

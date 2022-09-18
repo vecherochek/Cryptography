@@ -11,6 +11,7 @@ public class MainWindowViewModel : ObservableObject
 {
     private string _answer;
     private string _userName;
+    public ChatClientFunctions Client { get; set; }
     public ICommand ConnectToTheServerCommand { get; set; }
 
     public object CurrentView { get; set; }
@@ -35,15 +36,15 @@ public class MainWindowViewModel : ObservableObject
         }
     }
 
-    public MainWindowViewModel(object currentView)
+    public MainWindowViewModel()
     {
-        CurrentView = currentView;
         ConnectToTheServerCommand = new RelayCommand(ConnectToTheServer);
     }
 
     private async void ConnectToTheServer(object o)
     {
-        var a = await new ChatClientFunctions().Login(UserName);
+        Client = new ChatClientFunctions();
+        var a = await Client.Login(UserName);
         Answer = a.Code == 0 ? "You are now connected!" : a.Message;
     }
 }

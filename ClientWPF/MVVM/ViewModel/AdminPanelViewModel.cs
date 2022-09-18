@@ -3,6 +3,8 @@ using System.Text;
 using System.Windows.Input;
 using ClientWPF.Core;
 using ClientWPF.MVVM.Commands;
+using DryIoc;
+using GrpcClient;
 using LUC;
 using static Cryptography.Extensions.ByteArrayExtensions;
 
@@ -14,23 +16,39 @@ public class AdminPanelViewModel : ObservableObject
     private string _publicLucKey;
     private string _privateLucKey;
     private string _nLucKey;
+    private byte[] _dealkeybyte;
     public ICommand GenerateDEALkeyCommand { get; set; }
     public ICommand GenerateLUCkeysCommand { get; set; }
+
+    public ICommand SendDEALkeyCommand { get; set; }
+
     public KeyGenerator LUCkeys { get; set; }
 
     public AdminPanelViewModel()
     {
         GenerateDEALkeyCommand = new RelayCommand(o =>
         {
-            DEALkey = new BigInteger(GenerateRandomByteArray(16)).ToString();
+            _dealkeybyte = GenerateRandomByteArray(16);
+            DEALkey = new BigInteger(_dealkeybyte).ToString();
         });
-        GenerateLUCkeysCommand = new RelayCommand(o =>
-        {
-            LUCkeys = new KeyGenerator(new BigInteger(Encoding.Default.GetBytes(DEALkey)));
-            PublicLUCkey = LUCkeys.PublicKey.Key.ToString();
-            PrivateLUCkey = LUCkeys.PrivateKey.Key.ToString();
-            NLUCkey = LUCkeys.PrivateKey.N.ToString();
-        });
+        GenerateLUCkeysCommand = new RelayCommand(GenerateLUCkeys);
+        SendDEALkeyCommand = new RelayCommand(SendDEALkey);
+    }
+
+    private async void SendDEALkey(object o)
+    {
+        var mainwindowVM = App.Container.Resolve<MainWindowViewModel>();
+        
+        var encryptedDealKey = new LUC.LUC().Encrypt(new BigInteger(_dealkeybyte), LUCkeys.PublicKey);
+        await mainwindowVM.Client.SendKey(encryptedDealKey.ToByteArray());
+    }
+
+    private void GenerateLUCkeys(object o)
+    {
+        LUCkeys = new KeyGenerator(new BigInteger(Encoding.Default.GetBytes(DEALkey)));
+        PublicLUCkey = LUCkeys.PublicKey.Key.ToString();
+        PrivateLUCkey = LUCkeys.PrivateKey.Key.ToString();
+        NLUCkey = LUCkeys.PrivateKey.N.ToString();
     }
 
     public string DEALkey

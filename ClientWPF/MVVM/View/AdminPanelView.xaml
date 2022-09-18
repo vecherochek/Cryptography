@@ -82,7 +82,8 @@
                     Background="#252525"
                     BorderBrush="#252525"
                     Foreground="LightGray"
-                    FontSize="12" />
+                    FontSize="12"
+                    Command="{Binding SendDEALkeyCommand}"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -47,7 +47,7 @@
                     BorderBrush="#252525"
                     Foreground="LightGray"
                     FontSize="14" 
-                    Command="{Binding GenerateLUCkeysCommand}"/>
+                    Command="{Binding GetDEALkeyCommand}"/>
             <TextBox Width="220"
                      Height="30"
                      VerticalContentAlignment="Center"

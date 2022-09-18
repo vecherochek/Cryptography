@@ -20,7 +20,8 @@ namespace ClientWPF
             
             Container.Register<MainWindow>(Reuse.Singleton);
             Container.Register<HelloWindow>(Reuse.Singleton);
-
+            Container.Register<MainWindowViewModel>(Reuse.Singleton);
+            
             var reg = Container.Resolve<HelloWindow>();
             reg.DataContext = new HelloWindowViewModel(reg);
             reg.Show();

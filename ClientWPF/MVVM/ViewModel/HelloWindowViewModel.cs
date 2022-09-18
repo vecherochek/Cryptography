@@ -19,14 +19,18 @@ public class HelloWindowViewModel : ObservableObject
         OpenAdminWindowCommand = new RelayCommand(o =>
         {
             var a = App.Container.Resolve<MainWindow>();
-            a.DataContext = new MainWindowViewModel(new AdminPanelViewModel());
+            var viewModel = App.Container.Resolve<MainWindowViewModel>();
+            viewModel.CurrentView = new AdminPanelViewModel();
+            a.DataContext = viewModel;
             a.Show();
             _owner.Close();
         });
         OpenUserWindowCommand = new RelayCommand(o =>
         {
             var a = App.Container.Resolve<MainWindow>();
-            a.DataContext = new MainWindowViewModel(new UserPanelViewModel());
+            var viewModel = App.Container.Resolve<MainWindowViewModel>();
+            viewModel.CurrentView = new UserPanelViewModel();
+            a.DataContext = viewModel;
             a.Show();
             _owner.Close();
         });

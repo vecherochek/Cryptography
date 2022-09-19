@@ -33,9 +33,14 @@ public class ChatClientFunctions
         return await _client.GetKeyAsync(new UserRequest {User = username});
     }
 
-    public async Task<Empty> SendKey(byte[] key)
+    public async Task<Empty> SendKey(byte[] key, byte[] dealIV, byte[] desIV)
     {
-        return await _client.SendKeyAsync(new KeyInput {Key = ByteString.CopyFrom(key)});
+        return await _client.SendKeyAsync(new KeyInput
+        {
+            Key = ByteString.CopyFrom(key),
+            DealIV = ByteString.CopyFrom(dealIV),
+            DesIV = ByteString.CopyFrom(desIV)
+        });
     }
 
     public async Task<Empty> SendMessage(string username, byte[] message, string time)

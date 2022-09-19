@@ -31,8 +31,12 @@ message UserRequest {
 
 message KeyInput {
   bytes key = 1;
+  bytes desIV = 2;
+  bytes dealIV = 3;
 }
 
 message KeyOutput {
   bytes key = 1;
+  bytes desIV = 2;
+  bytes dealIV = 3;
 }

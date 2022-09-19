@@ -14,6 +14,8 @@ public class ChatService : Chat.ChatBase
     private readonly ILogger<ChatService> _logger;
     private int _usersId = 1;
     private static ByteString ServerKey { get; set; }
+    private static ByteString ServerDesIV { get; set; }
+    private static ByteString ServerDealIV { get; set; }
 
     /*private readonly User _server = new User
     {
@@ -70,6 +72,8 @@ public class ChatService : Chat.ChatBase
                 UserMessage = Encoding.Default.GetBytes($"\n[{DateTime.Now:HH:mm}] {request.User} has disconnected!\n")
             }
         );*/
+        if (UserDictionary.users.Count == 0) MessageQueue.messages.Clear();
+        
         return Task.FromResult(new Empty());
     }
 
@@ -94,13 +98,20 @@ public class ChatService : Chat.ChatBase
     {
         _logger.LogInformation($"\n[{DateTime.UtcNow}]: The symmetric key was received by the server\n");
         ServerKey = request.Key;
-
+        ServerDesIV = request.DesIV;
+        ServerDealIV = request.DealIV;
+        MessageQueue.messages.Clear();
         return Task.FromResult(new Empty());
     }
 
     public override Task<KeyOutput> GetKey(UserRequest request, ServerCallContext context)
     {
         _logger.LogInformation($"\n[{DateTime.UtcNow}]: {request.User} received the key\n");
-        return Task.FromResult(new KeyOutput {Key = ServerKey});
+        return Task.FromResult(new KeyOutput
+        {
+            Key = ServerKey,
+            DealIV = ServerDealIV,
+            DesIV = ServerDesIV
+        });
     }
 }

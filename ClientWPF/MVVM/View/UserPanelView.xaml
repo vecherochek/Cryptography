@@ -48,6 +48,12 @@
                     Foreground="LightGray"
                     FontSize="14" 
                     Command="{Binding GetDEALkeyCommand}"/>
+            <Label Height="25"
+                   Content="DEAL key"
+                   FontSize="12"
+                   FontWeight="Bold"
+                   Foreground="Gray"
+                   Margin="15, 5, 0,0" />
             <TextBox Width="220"
                      Height="30"
                      VerticalContentAlignment="Center"

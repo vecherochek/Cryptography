@@ -43,13 +43,14 @@ public class ChatClientFunctions
         });
     }
 
-    public async Task<Empty> SendMessage(string username, byte[] message, string time)
+    public async Task<Empty> SendMessage(string username, byte[] message, string time, string filename)
     {
         return await _client.SendMessageAsync(new MessageInput
         {
             User = username,
             Time = time,
-            Message = ByteString.CopyFrom(message)
+            Message = ByteString.CopyFrom(message),
+            Filename = filename
         });
     }
 }

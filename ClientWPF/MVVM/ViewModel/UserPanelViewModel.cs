@@ -74,7 +74,7 @@ public class UserPanelViewModel : ObservableObject
                 _mainwindowVM.Memo("Enter LUC keys to get DEAL key.");
                 return;
             }
-            
+
             _username = _mainwindowVM.UserName;
             try
             {
@@ -82,12 +82,12 @@ public class UserPanelViewModel : ObservableObject
                 keysend = true;
                 var privatekey = new LucKey(BigInteger.Parse(PrivateLUCkey),
                     BigInteger.Parse(NLUCkey));
-            
+
                 var LucEncoder = new LUC.LUC();
                 var decryptedKey = LucEncoder.Decrypt(new BigInteger(a.Key.ToArray()), privatekey);
                 var decryptedDesIV = LucEncoder.Decrypt(new BigInteger(a.DesIV.ToArray()), privatekey);
                 var decryptedDealIV = LucEncoder.Decrypt(new BigInteger(a.DealIV.ToArray()), privatekey);
-            
+
                 DEALkey = decryptedKey.ToString();
                 dealIV = decryptedDealIV.ToByteArray();
                 desIV = decryptedDesIV.ToByteArray();
@@ -100,7 +100,7 @@ public class UserPanelViewModel : ObservableObject
                 return;
             }
         }
-        
+
         else _mainwindowVM.Memo("Join the server to get started.");
     }
 
@@ -111,7 +111,6 @@ public class UserPanelViewModel : ObservableObject
         {
             await foreach (var messageData in dataStream.ResponseStream.ReadAllAsync())
             {
-                //vm.Messages.Add(new MessageBoxControl($"[{DateTime.Now}]{messageData.User}: {messageData.Message}"));
                 if (_mainwindowVM.Encoder == null)
                 {
                     _mainwindowVM.InitCipher(desIV, dealIV);
@@ -119,10 +118,16 @@ public class UserPanelViewModel : ObservableObject
 
                 var tmp = messageData.Message.ToByteArray();
                 var mes = _mainwindowVM.Cipher.Decrypt(tmp, _mainwindowVM.RoundKeys);
-                /*_mainwindowVM.Messages =
-                    $"[{messageData.Time}] {messageData.User} : {Encoding.UTF8.GetString(mes)}\n";*/
-                _mainwindowVM.InvokeInUiThread(new Action(() => _mainwindowVM.MessageControls.Add(
-                    new MessageBoxControl(messageData.User, messageData.Time, Encoding.UTF8.GetString(mes)))));
+                if (messageData.Filename != string.Empty)
+                {
+                    _mainwindowVM.InvokeInUiThread(new Action(() => _mainwindowVM.MessageControls.Add(
+                        new MessageBoxControl(messageData.User, messageData.Time, mes, messageData.Filename))));
+                }
+                else
+                {
+                    _mainwindowVM.InvokeInUiThread(new Action(() => _mainwindowVM.MessageControls.Add(
+                        new MessageBoxControl(messageData.User, messageData.Time, Encoding.UTF8.GetString(mes)))));
+                }
             }
         }
         catch (Exception e)

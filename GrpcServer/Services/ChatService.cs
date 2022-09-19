@@ -79,7 +79,9 @@ public class ChatService : Chat.ChatBase
 
     public override Task<Empty> SendMessage(MessageInput request, ServerCallContext context)
     {
-        _logger.LogInformation($"\n[{request.Time}]{request.User}: {request.Message.ToStringUtf8()}\n");
+        _logger.LogInformation(request.Filename == string.Empty
+            ? $"\n[{request.Time}]{request.User}: {request.Message.ToStringUtf8()}\n"
+            : $"\n[{request.Time}]{request.User}: file {request.Filename}\n");
         MessageQueue.messages.Add(new Message
             {
                 MessageId = new Random().Next(0, int.MaxValue),
@@ -88,7 +90,8 @@ public class ChatService : Chat.ChatBase
                     UserName = request.User
                 },
                 Time = request.Time,
-                UserMessage = request.Message.ToByteArray()
+                UserMessage = request.Message.ToByteArray(),
+                FileName = request.Filename
             }
         );
         return Task.FromResult(new Empty());

@@ -132,7 +132,8 @@
                     Height="35"
                     Margin="10, 5, 10, 0"
                     Cursor="Hand"
-                    Style="{StaticResource ButtonAttachFileTheme}" />
+                    Style="{StaticResource ButtonAttachFileTheme}" 
+                    Command="{Binding UploadFileCommand}"/>
             <TextBox Grid.Column="1"
                      Height="55"
                      VerticalContentAlignment="Center"

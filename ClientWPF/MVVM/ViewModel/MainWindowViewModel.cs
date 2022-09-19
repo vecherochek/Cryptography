@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Numerics;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -11,7 +10,7 @@ using ClientWPF.Core;
 using ClientWPF.MVVM.Commands;
 using ClientWPF.UserControls;
 using GrpcClient;
-using static Cryptography.Extensions.ByteArrayExtensions;
+using Microsoft.Win32;
 
 namespace ClientWPF.MVVM.ViewModel;
 
@@ -19,17 +18,16 @@ public class MainWindowViewModel : ObservableObject
 {
     private string _userName;
     private string _userMessage;
-    public ChatClientFunctions Client { get; set; }
-    public ICommand ConnectToTheServerCommand { get; set; }
-    public ICommand CloseCommand { get; set; }
-    public ICommand SendMessageCommand { get; set; }
-    public DEAL.DEAL Encoder;
-    public CipherContext.CipherContext Cipher;
     public byte[][] RoundKeys;
-
-    /*private string _messages;*/
     public uint ConnectionCode;
     public dynamic CurrentView { get; set; }
+    public DEAL.DEAL Encoder;
+    public CipherContext.CipherContext Cipher;
+    public ChatClientFunctions Client { get; set; }
+    public ICommand ConnectToTheServerCommand { get; set; }
+    public ICommand UploadFileCommand { get; set; }
+    public ICommand SendMessageCommand { get; set; }
+    public ICommand CloseCommand { get; set; }
 
     public ObservableCollection<MessageBoxControl> MessageControls { get; set; } =
         new ObservableCollection<MessageBoxControl>();
@@ -54,21 +52,12 @@ public class MainWindowViewModel : ObservableObject
         }
     }
 
-    /*public string Messages
-    {
-        get => _messages;
-        set
-        {
-            _messages += value;
-            OnPropertyChanged();
-        }
-    }*/
-
     public MainWindowViewModel()
     {
         ConnectToTheServerCommand = new RelayCommand(ConnectToTheServer);
         CloseCommand = new RelayCommand(Close);
         SendMessageCommand = new RelayCommand(SendMessage);
+        UploadFileCommand = new RelayCommand(UploadFile);
         ConnectionCode = 0;
     }
 
@@ -82,7 +71,7 @@ public class MainWindowViewModel : ObservableObject
                 var a = await Client.Login(UserName);
                 ConnectionCode = a.Code;
                 string memo = ConnectionCode == 1
-                    ? "You are now connected! Get a DEAL key to start communicating."
+                    ? "You are now connected! Send/get a DEAL key to start communicating."
                     : a.Message;
                 Memo(memo);
             }
@@ -125,7 +114,7 @@ public class MainWindowViewModel : ObservableObject
                 {
                     var mes = Encoding.UTF8.GetBytes(UserMessage);
                     var encrypted = Cipher.Encrypt(mes, RoundKeys);
-                    await Client.SendMessage(UserName, encrypted, DateTime.Now.ToString("HH:mm"));
+                    await Client.SendMessage(UserName, encrypted, DateTime.Now.ToString("HH:mm"), string.Empty);
                     UserMessage = String.Empty;
                 }
                 catch (Exception e)
@@ -153,6 +142,49 @@ public class MainWindowViewModel : ObservableObject
             }
 
         Application.Current.Shutdown();
+    }
+
+    private async void UploadFile(object o)
+    {
+        if (ConnectionCode == 1)
+        {
+            if (CurrentView.DEALkey == null)
+            {
+                Memo("Generate/get DEAL key to start chatting.");
+                return;
+            }
+
+            if (!CurrentView.keysend)
+            {
+                Memo("Send/get DEAL key to start chatting.");
+                return;
+            }
+
+            if (Encoder == null)
+            {
+                InitCipher(CurrentView.desIV, CurrentView.dealIV);
+            }
+
+            var openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    var path = openFileDialog.FileName;
+                    var fileName = Path.GetFileName(path);
+                    var mes = await File.ReadAllBytesAsync(path);
+                    var encrypted = await Cipher.EncryptAsync(mes, RoundKeys);
+                    await Client.SendMessage(UserName, encrypted, DateTime.Now.ToString("HH:mm"), fileName);
+                }
+                catch (Exception e)
+                {
+                    Memo("There is no connection to the server.");
+                    return;
+                }
+            }
+        }
+
+        else Memo("Join the server to get started.");
     }
 
     public void InitCipher(byte[] desIV, byte[] dealIV)

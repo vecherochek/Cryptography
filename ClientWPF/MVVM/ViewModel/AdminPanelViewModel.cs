@@ -120,13 +120,24 @@ public class AdminPanelViewModel : ObservableObject
                 {
                     _mainwindowVM.InitCipher(desIV, dealIV);
                 }
-
                 var tmp = messageData.Message.ToByteArray();
                 var mes = _mainwindowVM.Cipher.Decrypt(tmp, _mainwindowVM.RoundKeys);
+                
+                if (messageData.Filename != string.Empty)
+                {
+                    _mainwindowVM.InvokeInUiThread(new Action(() => _mainwindowVM.MessageControls.Add(
+                        new MessageBoxControl(messageData.User, messageData.Time, mes, messageData.Filename))));
+                }
+                else
+                {
+                    _mainwindowVM.InvokeInUiThread(new Action(() => _mainwindowVM.MessageControls.Add(
+                        new MessageBoxControl(messageData.User, messageData.Time, Encoding.UTF8.GetString(mes)))));
+                }
+                
+                
                 /*_mainwindowVM.Messages =
                     $"[{messageData.Time}] {messageData.User} : {Encoding.UTF8.GetString(mes)}\n";*/
-                _mainwindowVM.InvokeInUiThread(new Action(() => _mainwindowVM.MessageControls.Add(
-                    new MessageBoxControl(messageData.User, messageData.Time, Encoding.UTF8.GetString(mes)))));
+                
             }
         }
         catch (Exception e)

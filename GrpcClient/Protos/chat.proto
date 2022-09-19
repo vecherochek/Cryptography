@@ -18,6 +18,7 @@ message MessageInput {
   string user = 1;
   string time = 2;
   bytes message = 3;
+  string filename = 4;
 }
 
 message ServerResponse{

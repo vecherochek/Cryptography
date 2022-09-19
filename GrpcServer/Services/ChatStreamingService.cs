@@ -33,8 +33,8 @@ public class ChatStreamingService: ChatMessagesStreaming.ChatMessagesStreamingBa
                         {
                             User = MessageQueue.messages[index].User.UserName,
                             Time = MessageQueue.messages[index].Time,
-                            Message = ByteString.CopyFrom(MessageQueue.messages[index].UserMessage)
-                            
+                            Message = ByteString.CopyFrom(MessageQueue.messages[index].UserMessage),
+                            Filename = MessageQueue.messages[index].FileName
                         };
                         lastMessageId = MessageQueue.messages[index].MessageId;
                         await responseStream.WriteAsync(receivedMessage);

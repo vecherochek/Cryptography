@@ -70,7 +70,7 @@ namespace Cryptography.Extensions
 
         public static byte[] PaddingPKCs7(byte[] block, int blockSize)
         {
-            if (block.Length == 8) return block;
+            if (block.Length == 8 && blockSize == 8) return block;
             var addition = (byte) (blockSize - block.Length % blockSize);
             var paddedBlock = new byte[block.Length + addition];
             Array.Copy(block, paddedBlock, block.Length);

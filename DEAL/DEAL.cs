@@ -11,17 +11,18 @@ namespace DEAL
         private static readonly DES.DES Des = new DES.DES();
         private const int BlockSizeConst = 16;
         private readonly ISymmetricalAlgorithm _feistelNetwork;
+        private byte[] _desIv;
 
         public int BlockSize => BlockSizeConst;
 
-        public DEAL(byte[] key)
+        public DEAL(byte[] key, byte[] desIv)
         {
             var numberOfRounds = key.Length == 32 ? 8 : 6;
-            var iv = Des.GenerateIV();
+            _desIv = desIv;
             _feistelNetwork =
                 new FeistelNetwork(
-                    new DEALRoundKeysGenerator(Des, iv),
-                    new DEALFeistelFunction(Des, iv),
+                    new DEALRoundKeysGenerator(Des, _desIv),
+                    new DEALFeistelFunction(Des, _desIv),
                     BlockSizeConst,
                     numberOfRounds);
         }

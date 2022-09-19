@@ -10,7 +10,6 @@
 
     <ItemGroup>
       <Folder Include="MVVM\Model" />
-      <Folder Include="UserControls" />
     </ItemGroup>
 
     <ItemGroup>
@@ -35,6 +34,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Cryptography.Extensions\Cryptography.Extensions.csproj" />
+      <ProjectReference Include="..\DEAL\DEAL.csproj" />
       <ProjectReference Include="..\GrpcClient\GrpcClient.csproj" />
       <ProjectReference Include="..\LUC\LUC.csproj" />
     </ItemGroup>

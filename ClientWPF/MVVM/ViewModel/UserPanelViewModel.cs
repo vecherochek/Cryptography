@@ -1,12 +1,16 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Numerics;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ClientWPF.Core;
 using ClientWPF.MVVM.Commands;
+using ClientWPF.UserControls;
 using DryIoc;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using GrpcClient;
 using LUC;
 
 namespace ClientWPF.MVVM.ViewModel;
@@ -17,8 +21,13 @@ public class UserPanelViewModel : ObservableObject
     private string _privateLucKey;
     private string _nLucKey;
     private string _username;
+    public byte[] dealIV;
+    public byte[] desIV;
+    public bool keysend = false;
     public ICommand GetDEALkeyCommand { get; set; }
     private MainWindowViewModel _mainwindowVM;
+    private AsyncServerStreamingCall<ReceivedMessage> dataStream;
+
 
     public string DEALkey
     {
@@ -62,31 +71,64 @@ public class UserPanelViewModel : ObservableObject
         {
             if (PrivateLUCkey == null || NLUCkey == null)
             {
-                _mainwindowVM.Messages = "[memo] Enter LUC keys to get DEAL key\n";
+                _mainwindowVM.Memo("Enter LUC keys to get DEAL key.");
                 return;
             }
-
-            _username = _mainwindowVM.UserName;
-            var a = await _mainwindowVM.Client.GetKey(_username);
-            var privatekey = new LucKey(BigInteger.Parse(PrivateLUCkey),
-                BigInteger.Parse(NLUCkey));
-            var decrypted = new LUC.LUC().Decrypt(new BigInteger(a.Key.ToArray()), privatekey);
-            DEALkey = decrypted.ToString();
-            _mainwindowVM.Messages = "[memo] Now you can chatting\n";
-            Task.Run(() => Chatting(_mainwindowVM));
             
+            _username = _mainwindowVM.UserName;
+            try
+            {
+                var a = await _mainwindowVM.Client.GetKey(_username);
+                keysend = true;
+                var privatekey = new LucKey(BigInteger.Parse(PrivateLUCkey),
+                    BigInteger.Parse(NLUCkey));
+            
+                var LucEncoder = new LUC.LUC();
+                var decryptedKey = LucEncoder.Decrypt(new BigInteger(a.Key.ToArray()), privatekey);
+                var decryptedDesIV = LucEncoder.Decrypt(new BigInteger(a.DesIV.ToArray()), privatekey);
+                var decryptedDealIV = LucEncoder.Decrypt(new BigInteger(a.DealIV.ToArray()), privatekey);
+            
+                DEALkey = decryptedKey.ToString();
+                dealIV = decryptedDealIV.ToByteArray();
+                desIV = decryptedDesIV.ToByteArray();
+                _mainwindowVM.Memo("Now you can chatting.");
+                if (dataStream == null) Task.Run(() => Chatting());
+            }
+            catch (Exception e)
+            {
+                _mainwindowVM.Memo("There is no connection to the server.");
+                return;
+            }
         }
-
-        else _mainwindowVM.Messages = "[memo] Join the server to get started\n";
+        
+        else _mainwindowVM.Memo("Join the server to get started.");
     }
 
-    private async void Chatting(MainWindowViewModel vm)
+    private async void Chatting()
     {
-        var dataStream = vm.Client._streamingClient.ChatMessagesStreaming(new Empty());
-        await foreach (var messageData in dataStream.ResponseStream.ReadAllAsync())
+        dataStream = _mainwindowVM.Client._streamingClient.ChatMessagesStreaming(new Empty());
+        try
         {
-            //vm.Messages.Add(new MessageBoxControl($"[{DateTime.Now}]{messageData.User}: {messageData.Message}"));
-            vm.Messages = $"[{messageData.Time}] {messageData.User} : {messageData.Message.ToStringUtf8()}\n";
+            await foreach (var messageData in dataStream.ResponseStream.ReadAllAsync())
+            {
+                //vm.Messages.Add(new MessageBoxControl($"[{DateTime.Now}]{messageData.User}: {messageData.Message}"));
+                if (_mainwindowVM.Encoder == null)
+                {
+                    _mainwindowVM.InitCipher(desIV, dealIV);
+                }
+
+                var tmp = messageData.Message.ToByteArray();
+                var mes = _mainwindowVM.Cipher.Decrypt(tmp, _mainwindowVM.RoundKeys);
+                /*_mainwindowVM.Messages =
+                    $"[{messageData.Time}] {messageData.User} : {Encoding.UTF8.GetString(mes)}\n";*/
+                _mainwindowVM.InvokeInUiThread(new Action(() => _mainwindowVM.MessageControls.Add(
+                    new MessageBoxControl(messageData.User, messageData.Time, Encoding.UTF8.GetString(mes)))));
+            }
+        }
+        catch (Exception e)
+        {
+            _mainwindowVM.Memo("There is no connection to the server.");
+            return;
         }
     }
 }

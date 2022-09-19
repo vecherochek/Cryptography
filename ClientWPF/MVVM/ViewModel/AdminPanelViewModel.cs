@@ -1,13 +1,15 @@
-﻿using System.Linq;
+﻿using System;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ClientWPF.Core;
 using ClientWPF.MVVM.Commands;
+using ClientWPF.UserControls;
 using DryIoc;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using GrpcClient;
 using LUC;
 using static Cryptography.Extensions.ByteArrayExtensions;
 
@@ -19,7 +21,12 @@ public class AdminPanelViewModel : ObservableObject
     private string _publicLucKey;
     private string _privateLucKey;
     private string _nLucKey;
+    public byte[] dealIV;
+    public byte[] desIV;
     private byte[] _dealkeybyte;
+    public bool keysend = false;
+    private AsyncServerStreamingCall<ReceivedMessage> dataStream;
+
     private MainWindowViewModel _mainwindowVM;
     public ICommand GenerateDEALkeyCommand { get; set; }
     public ICommand GenerateLUCkeysCommand { get; set; }
@@ -33,8 +40,12 @@ public class AdminPanelViewModel : ObservableObject
         _mainwindowVM = App.Container.Resolve<MainWindowViewModel>();
         GenerateDEALkeyCommand = new RelayCommand(o =>
         {
-            _dealkeybyte = GenerateRandomByteArray(16);
+            keysend = false;
+            _dealkeybyte = GenerateRandomByteArray(24);
             DEALkey = new BigInteger(_dealkeybyte).ToString();
+            PrivateLUCkey = string.Empty;
+            PublicLUCkey = string.Empty;
+            NLUCkey = string.Empty;
         });
         GenerateLUCkeysCommand = new RelayCommand(GenerateLUCkeys);
         SendDEALkeyCommand = new RelayCommand(SendDEALkey);
@@ -44,32 +55,50 @@ public class AdminPanelViewModel : ObservableObject
     {
         if (DEALkey == null)
         {
-            _mainwindowVM.Messages = "[memo] Generate DEAL key to send it\n";
+            _mainwindowVM.Memo("Generate DEAL key to send it.");
             return;
         }
 
-        if (PrivateLUCkey == null || PublicLUCkey == null || NLUCkey == null)
+        if (PrivateLUCkey == string.Empty || PublicLUCkey == string.Empty || NLUCkey == string.Empty)
         {
-            _mainwindowVM.Messages = "[memo] Generate LUC keys to send DEAL key\n";
+            _mainwindowVM.Memo("Generate LUC keys to send DEAL key.");
             return;
         }
 
         if (_mainwindowVM.ConnectionCode == 1)
         {
-            var encryptedDealKey = new LUC.LUC().Encrypt(new BigInteger(_dealkeybyte), LUCkeys.PublicKey);
-            await _mainwindowVM.Client.SendKey(encryptedDealKey.ToByteArray());
-            _mainwindowVM.Messages = "[memo] Now you can chatting\n";
-            Task.Run(() => Chatting());
+            try
+            {
+                var LucEncoder = new LUC.LUC();
+                dealIV = GenerateRandomByteArray(16);
+                desIV = GenerateRandomByteArray(8);
+                var encryptedDealKey = LucEncoder.Encrypt(new BigInteger(_dealkeybyte), LUCkeys.PublicKey);
+                var encryptedDealIV = LucEncoder.Encrypt(new BigInteger(dealIV), LUCkeys.PublicKey);
+                var encryptedDesIV = LucEncoder.Encrypt(new BigInteger(desIV), LUCkeys.PublicKey);
+                await _mainwindowVM.Client.SendKey(
+                    encryptedDealKey.ToByteArray(),
+                    encryptedDealIV.ToByteArray(),
+                    encryptedDesIV.ToByteArray());
+            }
+            catch (Exception e)
+            {
+                _mainwindowVM.Memo("There is no connection to the server.");
+                return;
+            }
+
+            keysend = true;
+            _mainwindowVM.Memo("Now you can chatting.");
+            if (dataStream == null) Task.Run(() => Chatting());
         }
 
-        else _mainwindowVM.Messages = "[memo] Join the server to get started\n";
+        else _mainwindowVM.Memo("Join the server to get started.");
     }
 
     private void GenerateLUCkeys(object o)
     {
         if (DEALkey == null)
         {
-            _mainwindowVM.Messages = "[memo] Generate DEAL key to generate LUC keys\n";
+            _mainwindowVM.Memo("Generate DEAL key to generate LUC keys.");
             return;
         }
 
@@ -81,20 +110,29 @@ public class AdminPanelViewModel : ObservableObject
 
     private async void Chatting()
     {
-        var dataStream = _mainwindowVM.Client._streamingClient.ChatMessagesStreaming(new Empty());
-        await foreach (var messageData in dataStream.ResponseStream.ReadAllAsync())
+        dataStream = _mainwindowVM.Client._streamingClient.ChatMessagesStreaming(new Empty());
+        try
         {
-            //vm.Messages.Add(new MessageBoxControl($"[{DateTime.Now}]{messageData.User}: {messageData.Message}"));
-            if (_mainwindowVM.Encoder == null)
+            await foreach (var messageData in dataStream.ResponseStream.ReadAllAsync())
             {
-                _mainwindowVM.InitCipher();
+                //_mainwindowVM.Messages.Add(new MessageBoxControl($"[{DateTime.Now}]{messageData.User}: {messageData.Message}"));
+                if (_mainwindowVM.Encoder == null)
+                {
+                    _mainwindowVM.InitCipher(desIV, dealIV);
+                }
+
+                var tmp = messageData.Message.ToByteArray();
+                var mes = _mainwindowVM.Cipher.Decrypt(tmp, _mainwindowVM.RoundKeys);
+                /*_mainwindowVM.Messages =
+                    $"[{messageData.Time}] {messageData.User} : {Encoding.UTF8.GetString(mes)}\n";*/
+                _mainwindowVM.InvokeInUiThread(new Action(() => _mainwindowVM.MessageControls.Add(
+                    new MessageBoxControl(messageData.User, messageData.Time, Encoding.UTF8.GetString(mes)))));
             }
-            /*var tmp = Encoding.UTF8.GetBytes(messageData.Message.ToStringUtf8());
-            var mes = _mainwindowVM.Cipher.Decrypt(tmp, _mainwindowVM.RoundKeys);
-            _mainwindowVM.Messages =
-                $"[{messageData.Time}] {messageData.User} : {Encoding.UTF8.GetString(mes)}\n";*/
-            _mainwindowVM.Messages =
-                $"[{messageData.Time}] {messageData.User} : {messageData.Message.ToStringUtf8()}\n";
+        }
+        catch (Exception e)
+        {
+            _mainwindowVM.Memo("There is no connection to the server.");
+            return;
         }
     }
 

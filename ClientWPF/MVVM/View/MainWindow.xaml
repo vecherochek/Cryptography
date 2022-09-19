@@ -144,14 +144,15 @@
                     Margin="10, 5, 10, 0"
                     Cursor="Hand"
                     Style="{StaticResource ButtonSendMessageTheme}"
-                    Command="{Binding SendMessageCommand}" />
+                    Command="{Binding SendMessageCommand}" 
+                    IsDefault = "true"/>
         </Grid>
         <ContentControl Grid.Row="2"
                         Grid.Column="0"
                         Content="{Binding CurrentView}">
         </ContentControl>
 
-        <TextBox Grid.Row="1"
+        <!--<TextBox Grid.Row="1"
                  Grid.RowSpan="2"
                  Grid.Column="1"
                  VerticalContentAlignment="Top"
@@ -161,7 +162,7 @@
                  FontSize="14"
                  Text="{Binding Messages, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                  IsReadOnly="True"
-                 VerticalScrollBarVisibility="Auto"/>
+                 VerticalScrollBarVisibility="Auto"/>-->
         <!--<ScrollViewer Grid.Row="1"
                       Grid.RowSpan="2"
                       Grid.Column="1"
@@ -176,19 +177,21 @@
                 Text="{Binding Answer, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                 IsReadOnly="True" />
         </ScrollViewer>-->
-        <!--<ListView Grid.Row="2"
+        <ListView Grid.Row="1"
+                  Grid.RowSpan="2"
                   Grid.Column="1"
                   Background="Transparent"
                   BorderThickness="0"
+                  ItemsSource="{Binding MessageControls}"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                  ScrollViewer.VerticalScrollBarVisibility="Auto">~1~ItemsSource="{Binding Messages}"@1@
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
 
-            <ListView.ItemsPanel>
+            <!--<ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel></StackPanel>
                 </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
+            </ListView.ItemsPanel>-->
 
-        </ListView>-->
+        </ListView>
     </Grid>
 </Window>

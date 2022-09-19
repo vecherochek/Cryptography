@@ -11,7 +11,8 @@
                 <ResourceDictionary Source="Themes/ButtonNormBackgroundTheme.xaml" />
                 <ResourceDictionary Source="Themes/ButtonAttachFileTheme.xaml" />
                 <ResourceDictionary Source="Themes/ButtonSendMessageTheme.xaml" />
-                
+                <ResourceDictionary Source="Themes/ButtonDownloadFileTheme.xaml" />
+
                 <ResourceDictionary Source="Themes/TextBoxTheme.xaml" />
                 
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml" />

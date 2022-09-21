@@ -1,22 +1,30 @@
 ﻿using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
 using static Cryptography.Extensions.BigIntegerExtensions;
 
 namespace LUC
 {
     public class KeyGenerator
     {
-        private readonly PrimeNumbers _primeNumbers;
-        public LucKey PublicKey { get; }
+        private PrimeNumbers _primeNumbers;
+        private readonly BigInteger _message;
+        public LucKey PublicKey { get; set; }
 
-        public LucKey PrivateKey { get; }
+        public LucKey PrivateKey { get; set; }
 
         public KeyGenerator(BigInteger message)
         {
-            var prime = new PrimeNumbersGenerator(message.GetByteCount(), PrimeNumberTest.MillerRabin, 0.75);
+            _message = message;
+        }
+
+        public void GenerateKey()
+        {
+            var prime = new PrimeNumbersGenerator(_message.GetByteCount(), PrimeNumberTest.MillerRabin, 0.75);
             _primeNumbers = prime.GeneratePrime();
             
             BigInteger e = GetE();
-            BigInteger D = message * message - 4;
+            BigInteger D = _message * _message - 4;
             BigInteger S = Lcm(_primeNumbers.P - Legendre(D, _primeNumbers.P), _primeNumbers.Q - Legendre(D, _primeNumbers.Q));
             BigInteger d = MultiplicativeInverseModulo(e, S);
             
@@ -36,6 +44,12 @@ namespace LUC
             } while (BigInteger.GreatestCommonDivisor(e, number) != 1);
 
             return e;
+        }
+
+        public Task GenerateKeyAsync(CancellationToken token = default)
+        {
+            token.ThrowIfCancellationRequested();
+            return Task.Run(() => GenerateKey(), token);
         }
     }
 }

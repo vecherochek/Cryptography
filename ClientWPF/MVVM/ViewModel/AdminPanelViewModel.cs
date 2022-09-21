@@ -94,7 +94,7 @@ public class AdminPanelViewModel : ObservableObject
         else _mainwindowVM.Memo("Join the server to get started.");
     }
 
-    private void GenerateLUCkeys(object o)
+    private async void GenerateLUCkeys(object o)
     {
         if (DEALkey == null)
         {
@@ -103,6 +103,7 @@ public class AdminPanelViewModel : ObservableObject
         }
 
         LUCkeys = new KeyGenerator(new BigInteger(Encoding.Default.GetBytes(DEALkey)));
+        await LUCkeys.GenerateKeyAsync();
         PublicLUCkey = LUCkeys.PublicKey.Key.ToString();
         PrivateLUCkey = LUCkeys.PrivateKey.Key.ToString();
         NLUCkey = LUCkeys.PrivateKey.N.ToString();
